@@ -243,7 +243,7 @@ void PhysicsCurve::loadAssets1() {
 
 void PhysicsCurve::loadRenderState(){
 	Config fileConfig;
-    fileConfig.LoadConfig("avm2d/glshow.txt");
+    fileConfig.LoadConfig("resource/imgui_gl_show.txt");
 	zRotation = fileConfig.Read("zRotation", 0.0);
 	usingGeoShader = fileConfig.Read("usingGeoShader", 0);
 	lineWidth = fileConfig.Read("lineWidth", 0.2);

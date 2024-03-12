@@ -92,10 +92,11 @@ void GaussianFilterShaderTester::init() {
 
 void GaussianFilterShaderTester::loadTexture()
 {
-	string name = "avm2d/images/car.jpg";
+	string name = "resource/images/car.jpg";
 	cv::Mat img = cv::imread(name, cv::IMREAD_UNCHANGED);
 	if (img.empty())
 	{
+	
 		printf("failed on opening  texture image %s \n", name.c_str());
 		return;
 	}
@@ -153,7 +154,7 @@ void GaussianFilterShaderTester::loadAssets1() {
 
 void GaussianFilterShaderTester::loadRenderState(){
 	Config fileConfig;
-    fileConfig.LoadConfig("avm2d/glshow.txt");
+    fileConfig.LoadConfig("resource/imgui_gl_show.txt");
 
     
 }

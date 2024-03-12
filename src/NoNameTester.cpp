@@ -158,7 +158,7 @@ cv::Mat transformEllipseToRectangle(const cv::Mat& inputImage, const cv::Rect& r
 
 int mainTest() {
 	// Load the input image
-	cv::Mat inputImage = cv::imread("avm2d/left.jpg");
+	cv::Mat inputImage = cv::imread("resource/left.jpg");
 
 	// Set the number of points on the ellipse
 	int numPoints = 64;

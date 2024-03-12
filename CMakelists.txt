@@ -27,7 +27,7 @@ find_package( OpenGL REQUIRED )
 file(GLOB_RECURSE SOURCE_FILES 
    main.cpp
 	${CMAKE_SOURCE_DIR}/src/*.cpp)
-#	${CMAKE_SOURCE_DIR}/avm2d/*.cpp)
+#	${CMAKE_SOURCE_DIR}/resource/*.cpp)
 	
 # Add header files
 file(GLOB_RECURSE HEADER_FILES 

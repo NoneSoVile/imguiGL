@@ -73,7 +73,7 @@ void Sprite2d::loadMesh()
 
 void Sprite2d::loadTexture()
 {
-    string name = "avm2d/images/car.jpg";
+    string name = "resource/images/car.jpg";
 	cv::Mat img = cv::imread(name, cv::IMREAD_UNCHANGED);
 	if (img.empty())
 	{

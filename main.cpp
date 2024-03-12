@@ -86,18 +86,6 @@ bool destroyGLWindow(GLFWwindow* pWindow)
 // Main code
 int main(int, char**)
 {
-	cv::Mat DataMat[4];
-	const char* picNames[] = {
-		"avm2d/top2.jpg",
-		"avm2d/bottom2.jpg",
-		"avm2d/left2.jpg",
-		"avm2d/right2.jpg",
-	};
-	for (int i = 0; i < 4; i++) {
-		DataMat[i] = cv::imread(picNames[i]);
-		cv::cvtColor(DataMat[i], DataMat[i], COLOR_RGB2BGRA);
-		cv::resize(DataMat[i], DataMat[i], cv::Size(1280, 960));
-	}
 	prepareKeyCodeRemap();
 	glfwSetErrorCallback(glfw_error_callback);
 	if (!glfwInit())

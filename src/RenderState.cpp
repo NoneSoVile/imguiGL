@@ -5,7 +5,7 @@
 void RenderState::LoadConfig(string configFileName){
     string path = configFileName;
     if(path.empty()){
-        path = resourceFolder + "avm2d/glshow.txt";
+        path = resourceFolder + "resource/imgui_gl_show.txt";
     }
     Config fileConfig;
     fileConfig.LoadConfig(path);
@@ -119,7 +119,7 @@ void RenderState::LoadConfig(string configFileName){
     //std::vector<std::vector<float>> mat = fileConfig.ReadMatrix<float>("x_matrix", "|", ",");
     //matrix4f mat = fileConfig.Readmatrix4f("x_matrix", "|", ",");
     //car Info
-    path = resourceFolder + "avm2d/carInfo.txt";
+    path = resourceFolder + "resource/carInfo.txt";
     fileConfig.LoadConfig(path);
     carInfo.cw = fileConfig.Read("carinfo.cw", carInfo.cw);
     carInfo.ch = fileConfig.Read("carinfo.ch", carInfo.ch);

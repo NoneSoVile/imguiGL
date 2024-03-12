@@ -9,7 +9,7 @@ class ShaderTester: public RenderState
 {
 protected:
 
-    string resourceFolder = "avm2d/";
+    string resourceFolder = "resource/";
     //The shaders to tested
     std::shared_ptr<Shader> sumOfArrayShader;
 
