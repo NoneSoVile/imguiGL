@@ -8,10 +8,8 @@
 
 class Shader;
 
-#define WINDOW_WIDTH 1920
-#define WINDOW_HEIGHT 960
 
-void Sprite2d::init() {
+void Sprite2d::init(int w, int h) {
      /*create shaders
     */
     string vertexShaderFile = resourceFolder + std::string("shaders/basic.vert");
@@ -35,7 +33,7 @@ void Sprite2d::init() {
     loadTexture();
 
 	/*simulation initialization for sprite*/
-	initSimulation();
+	initSimulation(w, h);
 }
 
 void Sprite2d::loadMesh()
@@ -112,7 +110,8 @@ void Sprite2d::updateUI(int w, int h) {
 		ImGui::SliderFloat2("sprite position", pixelPosition, 0, screenDim.x);
         ImGui::SliderFloat("Trush x direction", &T[0], -200.0f, 200.0f); 
 		ImGui::SliderFloat("Trush y direction", &T[1], -200.0f, 200.0f);
-		ImGui::SliderFloat("friction coefficient", &C, 0.5f, 20.0f);
+		ImGui::SliderFloat("friction coefficient", &C, 0.5f, 60.0f);
+		ImGui::SliderFloat("Step Time", &deltaT, 0.5f, 10.0f);
         if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
             counter++;
         ImGui::SameLine();
@@ -163,15 +162,16 @@ vec2f Sprite2d::screenToNdc(vec2f screenPosition){
 }
 
 
-void Sprite2d::initSimulation(){
-	screenDim = vec2f(WINDOW_WIDTH, WINDOW_HEIGHT);
-	pixelSize = vec2f(60, 60);
+void Sprite2d::initSimulation(int w, int h){
+	screenDim = vec2f(w, h);
+	pixelSize = vec2f(260, 260);
 	pixelPosition = screenDim / 2;
 
 	T = vec2f(2, 2);  //N
 	V = vec2f(0, 0);   //Initial velocity
-	C = 0.5;
+	C = 5;
 	M = 10;  //Mass of sprite
+	S = vec2f(0, 0);
 }
 
  void Sprite2d::step0(float dt){
@@ -229,11 +229,69 @@ void Sprite2d::initSimulation(){
 	  S = Snew;
  }
 
+ void Sprite2d::step2(float dt){
+	 vec2f Vnew; // new velocity at time t + dt
+	 vec2f Snew; // new position at time t + dt
+	 vec2f k1, k2;
+	 static float time = 0;
+	 time += dt;
+	 vec2f T;
+	 T.x = cos(time * 0.01) * this->T.x;
+	 T.y = sin(time * 0.01) * this->T.y;
+	 F = (T - (C * V));
+	 A = F / M;
+	 k1 = dt * A;
+	 F = (T - (C * (V + k1)));
+	 A = F / M;
+	 k2 = dt * A;
+	 // Calculate the new velocity at time t + dt
+	 // where V is the velocity at time t
+	 Vnew = V + (k1 + k2) / 2;
+	 // Calculate the new displacement at time t + dt
+	 // where S is the displacement at time t
+	 Snew = S + Vnew * dt;
+	 // Update old velocity and displacement with the new ones
+	 V = Vnew;
+	 S = Snew;
+ }
+
+ void Sprite2d::step3(float dt){
+	 vec2f Vnew; // new velocity at time t + dt
+	 vec2f Snew; // new position at time t + dt
+	 vec2f k1, k2, k3, k4;
+	 static float time = 0;
+	 time += dt;
+	 vec2f T;
+	 T.x = cos(time * 0.01) * this->T.x;
+	 T.y = sin(time * 0.01) * this->T.y;
+	 F = (T - (C * V));
+	 A = F / M;
+	 k1 = dt * A;
+	 F = (T - (C * (V + k1 / 2)));
+	 A = F / M;
+	 k2 = dt * A;
+	 F = (T - (C * (V + k2 / 2)));
+	 A = F / M;
+	 k3 = dt * A;
+	 F = (T - (C * (V + k3)));
+	 A = F / M;
+	 k4 = dt * A;
+	 // Calculate the new velocity at time t + dt
+	 // where V is the velocity at time t
+	 Vnew = V + (k1 + 2 * k2 + 2 * k3 + k4) / 6;
+	 // Calculate the new displacement at time t + dt
+	 // where S is the displacement at time t
+	 Snew = S + Vnew * dt;
+	 // Update old velocity and displacement with the new ones
+	 V = Vnew;
+	 S = Snew;
+ }
+
 void Sprite2d::stepSimulation(float w, float h,float dt){
 	screenDim = vec2f(w, h);
 	//assume dt = 10ms means uniform time interval
-	dt = 1;  //ms
-	step1(dt);
+	dt = deltaT;  //ms
+	step3(dt);
 	pixelPosition = S;
 
 	//ndc viewport range [-1,1] .ie 2 in screen for every dimensions

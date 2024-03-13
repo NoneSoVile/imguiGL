@@ -41,6 +41,7 @@ protected:
     vec2f V; // velocity
     float M; // mass
     vec2f S; // displacement
+    float deltaT = 1;
 
 
 protected:
@@ -50,14 +51,16 @@ protected:
     void updateUI(int w, int h);
     void drawSprite(int w, int h);
     void stepSimulation(float w, float h,float dt);
-    void initSimulation();
+    void initSimulation(int w, int h);
 
     //physics model options
     void step0(float dt);
     void step1(float dt);
+    void step2(float dt);
+    void step3(float dt);
 
 public:
-    void init();
+    void init(int w, int h);
     void run(float w, float h);
 
 public:

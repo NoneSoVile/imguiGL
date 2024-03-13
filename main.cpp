@@ -41,8 +41,8 @@ using namespace cv;
 using namespace std;
 using cv::COLOR_RGB2BGRA;
 
-#define WINDOW_WIDTH 1920
-#define WINDOW_HEIGHT 960
+#define WINDOW_WIDTH 2300
+#define WINDOW_HEIGHT 1560
 
 #define VIDEO_WIDTH 1280
 #define VIDEO_HEIGHT 960
@@ -141,7 +141,7 @@ int main(int, char**)
 	//geoShaderTester.init();
 	//gaussianFilterTester.init();
 	curve.init();
-	sprite.init();
+	sprite.init(screenW, screenH);
 
 	// Main loop
 #ifdef __EMSCRIPTEN__
