@@ -1,4 +1,4 @@
-#include "Sprite2d.h"
+﻿#include "Sprite2d.h"
 #include "Shader.h"
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
@@ -79,7 +79,7 @@ void Sprite2d::loadMesh()
 
 void Sprite2d::loadTexture()
 {
-    string name = "resource/images/car.jpg";
+    string name = "resource/images/steelball.png";
 	cv::Mat img = cv::imread(name, cv::IMREAD_UNCHANGED);
 	if (img.empty())
 	{
@@ -110,7 +110,9 @@ void Sprite2d::updateUI(int w, int h) {
 
 		ImGui::SliderFloat2("sprite size", pixelSize, 2, 960);
 		ImGui::SliderFloat2("sprite position", pixelPosition, 0, screenDim.x);
-        ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+        ImGui::SliderFloat("Trush x direction", &T[0], -200.0f, 200.0f); 
+		ImGui::SliderFloat("Trush y direction", &T[1], -200.0f, 200.0f);
+		ImGui::SliderFloat("friction coefficient", &C, 0.5f, 20.0f);
         if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
             counter++;
         ImGui::SameLine();
@@ -121,44 +123,9 @@ void Sprite2d::updateUI(int w, int h) {
     }
 }
 
-vec2f Sprite2d::ndcToScreen(vec2f ndcPosition){
-	vec2f outPos;
-	ndcPosition.y *= -1;
-	outPos = ndcPosition * screenDim / 2.0 + screenDim/2.0;
-	return outPos;
-}
-    
-vec2f Sprite2d::screenToNdc(vec2f screenPosition){
-	vec2f outPos;
-	outPos = (2.0*screenPosition - screenDim) /screenDim;
-	outPos.y *= -1;
-	return outPos;
-}
-
-
-void Sprite2d::initSimulation(){
-	screenDim = vec2f(WINDOW_WIDTH, WINDOW_HEIGHT);
-	pixelSize = vec2f(20, 20);
-	pixelPosition = screenDim / 2;
-}
-
-
-void Sprite2d::stepSimulation(float w, float h,float dt){
-	screenDim = vec2f(w, h);
-	//pixelSize = vec2f(10, 10);
-	//pixelPosition = vec2f(w/2, h/2);
-
-	//ndc viewport range [-1,1] .ie 2 in screen for every dimensions
-	ndcSize = vec2f(pixelSize.x*2.0f / screenDim.x, pixelSize.y*2.0f / screenDim.y);
-	ndcPosition = screenToNdc(pixelPosition);
-	scale = ndcSize / 2.0;
-	translation = ndcPosition;
-}
-
-void Sprite2d::run(float w, float h) {
-	static float dt = 0;
-	stepSimulation(w, h, dt);
-    glViewport(0, 0, w, h);
+void Sprite2d::drawSprite(int w, int h){
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     renderShader->Use();
     renderShader->UseAndBindTexture("ourTexture", ourTexture);
 	renderShader->setUniform2fv("scale", scale, 1);
@@ -178,6 +145,108 @@ void Sprite2d::run(float w, float h) {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+	glDisable(GL_BLEND);
+}
 
+vec2f Sprite2d::ndcToScreen(vec2f ndcPosition){
+	vec2f outPos;
+	ndcPosition.y *= -1;
+	outPos = ndcPosition * screenDim / 2.0 + screenDim/2.0;
+	return outPos;
+}
+    
+vec2f Sprite2d::screenToNdc(vec2f screenPosition){
+	vec2f outPos;
+	outPos = (2.0*screenPosition - screenDim) /screenDim;
+	outPos.y *= -1;
+	return outPos;
+}
+
+
+void Sprite2d::initSimulation(){
+	screenDim = vec2f(WINDOW_WIDTH, WINDOW_HEIGHT);
+	pixelSize = vec2f(60, 60);
+	pixelPosition = screenDim / 2;
+
+	T = vec2f(2, 2);  //N
+	V = vec2f(0, 0);   //Initial velocity
+	C = 0.5;
+	M = 10;  //Mass of sprite
+}
+
+ void Sprite2d::step0(float dt){
+	vec2f Vnew, Snew;
+	// Calculate the total force
+	F = (T - (C * V));
+	// Calculate the acceleration
+	A = F / M;
+	// Calculate the new velocity at time t + dt
+	// where V is the velocity at time t
+	Vnew = V + A * dt;
+	// Calculate the new displacement at time t + dt
+	// where S is the displacement at time t
+	Snew = S + Vnew * dt;
+	// Update old velocity and displacement with the new ones
+	V = Vnew;
+	S = Snew;
+ }
+
+  void Sprite2d::step1(float dt){
+	  float eto = 0.01; // truncation error tolerance
+	  vec2f V1, V2;
+	  vec2f Vnew, Snew;
+	  float et; // truncation error
+	  // Take one step of size dt to estimate the new velocity
+	  F = (T - (C * V));
+	  A = F / M;
+	  V1 = V + A * dt;
+	  // Take two steps of size dt/2 to estimate the new velocity
+	  F = (T - (C * V));
+	  A = F / M;
+	  V2 = V + A * (dt / 2);
+	  F = (T - (C * V2));
+
+	  A = F / M;
+	  V2 = V2 + A * (dt / 2);
+	  // Estimate the truncation error
+	  et = MB::length(V1 - V2);
+	  // Estimate a new step size
+	  float dtnew = dt * sqrt(eto / et);
+	  if (dtnew < dt)
+	  { // take at step at the new smaller step size
+		  F = (T - (C * V));
+		  A = F / M;
+		  Vnew = V + A * dtnew;
+		  Snew = S + Vnew * dtnew;
+	  }
+	  else
+	  { // original step size is okay
+		  Vnew = V1;
+		  Snew = S + Vnew * dt;
+	  }
+	  // Update old velocity and displacement with the new ones
+	  V = Vnew;
+	  S = Snew;
+ }
+
+void Sprite2d::stepSimulation(float w, float h,float dt){
+	screenDim = vec2f(w, h);
+	//assume dt = 10ms means uniform time interval
+	dt = 1;  //ms
+	step1(dt);
+	pixelPosition = S;
+
+	//ndc viewport range [-1,1] .ie 2 in screen for every dimensions
+	ndcSize = vec2f(pixelSize.x*2.0f / screenDim.x, pixelSize.y*2.0f / screenDim.y);
+	ndcPosition = screenToNdc(pixelPosition);
+	scale = ndcSize / 2.0;
+	translation = ndcPosition;
+}
+
+void Sprite2d::run(float w, float h) {
+	static float dt = 0;
+	stepSimulation(w, h, dt);
+    glViewport(0, 0, w, h);
+	drawSprite(w, h);
     updateUI(w, h);
 }

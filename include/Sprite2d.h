@@ -33,14 +33,28 @@ protected:
     vec2f scale;
     vec2f translation;
 
+    //physics model data
+    vec2f F; 
+    vec2f T; // thrust
+    vec2f A;
+    float C; // drag coefficient
+    vec2f V; // velocity
+    float M; // mass
+    vec2f S; // displacement
+
 
 protected:
     void loadMesh();
     void loadTexture();
 
     void updateUI(int w, int h);
+    void drawSprite(int w, int h);
     void stepSimulation(float w, float h,float dt);
     void initSimulation();
+
+    //physics model options
+    void step0(float dt);
+    void step1(float dt);
 
 public:
     void init();
