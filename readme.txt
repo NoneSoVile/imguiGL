@@ -1,1 +1,1 @@
-test
+This project was build for the purpose of make imgui and OpenGL easy to use

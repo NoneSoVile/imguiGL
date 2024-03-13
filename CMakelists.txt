@@ -1,7 +1,7 @@
 cmake_minimum_required( VERSION 3.0 )
 set( CMAKE_TOOLCHAIN_FILE "d:/vcpkg/vcpkg/scripts/buildsystems/vcpkg.cmake" )
 
-project(ZeroEngineImgui)
+project(imgui_GL)
 # set path of glfw3
 if( NOT CMAKE_CL_64 )
   set(GLFW3_LIBS "D:/vcpkg/vcpkg/installed/x86-windows/lib/glfw3dll.lib")

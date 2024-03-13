@@ -11,9 +11,7 @@
 #include "NvMath.h"
 using std::string;
 using MB::vec3f;
-string itos(int i);
-float sign(float x);
-tm* getNowTime();
+
 double getCurrentTimeSeconds();
 float clamp(const float& a, const float b, const float c);
 float clampEulerAngle_minusPIToPI(const float& a);
