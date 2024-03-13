@@ -62,25 +62,6 @@ float startY =  0;
 
 bool runTester = false;
 bool drawTester = true;
-struct item {
-	int a;
-	int b;
-	int c;
-};
-
-bool destroyGLWindow(GLFWwindow* pWindow)
-{
-	bool bReturn = true;
-	
-	if (pWindow)
-	{
-		glfwDestroyWindow(pWindow);
-		pWindow = nullptr;
-	}
-	glfwTerminate();
-	return bReturn;
-}
-
 
 
 // Main code
