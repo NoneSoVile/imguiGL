@@ -8,6 +8,9 @@
 
 class Shader;
 
+#define WINDOW_WIDTH 1920
+#define WINDOW_HEIGHT 960
+
 void Sprite2d::init() {
      /*create shaders
     */
@@ -30,6 +33,9 @@ void Sprite2d::init() {
 
     /*create and load textures*/
     loadTexture();
+
+	/*simulation initialization for sprite*/
+	initSimulation();
 }
 
 void Sprite2d::loadMesh()
@@ -94,16 +100,16 @@ void Sprite2d::updateUI(int w, int h) {
     ImGuiIO& io = ImGui::GetIO(); (void)io;
 
     ImGui::SetNextWindowBgAlpha(0.5f);
-    // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
+    
     {
         static float f = 0.0f;
         static int counter = 0;
 
         ImGui::Begin("Helloxxx, world!", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);                          // Create a window called "Hello, world!" and append into it.
+        ImGui::Text("Settings");               // Display some text (you can use a format strings too)
 
-        ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-
-
+		ImGui::SliderFloat2("sprite size", pixelSize, 2, 960);
+		ImGui::SliderFloat2("sprite position", pixelPosition, 0, screenDim.x);
         ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
         if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
             counter++;
@@ -115,10 +121,48 @@ void Sprite2d::updateUI(int w, int h) {
     }
 }
 
+vec2f Sprite2d::ndcToScreen(vec2f ndcPosition){
+	vec2f outPos;
+	ndcPosition.y *= -1;
+	outPos = ndcPosition * screenDim / 2.0 + screenDim/2.0;
+	return outPos;
+}
+    
+vec2f Sprite2d::screenToNdc(vec2f screenPosition){
+	vec2f outPos;
+	outPos = (2.0*screenPosition - screenDim) /screenDim;
+	outPos.y *= -1;
+	return outPos;
+}
+
+
+void Sprite2d::initSimulation(){
+	screenDim = vec2f(WINDOW_WIDTH, WINDOW_HEIGHT);
+	pixelSize = vec2f(20, 20);
+	pixelPosition = screenDim / 2;
+}
+
+
+void Sprite2d::stepSimulation(float w, float h,float dt){
+	screenDim = vec2f(w, h);
+	//pixelSize = vec2f(10, 10);
+	//pixelPosition = vec2f(w/2, h/2);
+
+	//ndc viewport range [-1,1] .ie 2 in screen for every dimensions
+	ndcSize = vec2f(pixelSize.x*2.0f / screenDim.x, pixelSize.y*2.0f / screenDim.y);
+	ndcPosition = screenToNdc(pixelPosition);
+	scale = ndcSize / 2.0;
+	translation = ndcPosition;
+}
+
 void Sprite2d::run(float w, float h) {
+	static float dt = 0;
+	stepSimulation(w, h, dt);
     glViewport(0, 0, w, h);
     renderShader->Use();
     renderShader->UseAndBindTexture("ourTexture", ourTexture);
+	renderShader->setUniform2fv("scale", scale, 1);
+	renderShader->setUniform2fv("translation", translation, 1);
 	glBindVertexArray(VAO); CHECK_GL;
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO); CHECK_GL;

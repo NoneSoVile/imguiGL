@@ -102,10 +102,10 @@ public:
     }
 
     // component-wise vector divide assign
-//    friend vec2<T> & operator /= ( vec2<T> &lhs, const vec2<T> & rhs ) {
-//        for(int32_t i = 0; i < lhs.size(); i++) lhs._array[i] /= rhs._array[i];
-//        return *this;
-//    }
+    friend vec2<T> & operator /= ( vec2<T> &lhs, const vec2<T> & rhs ) {
+        for(int32_t i = 0; i < lhs.size(); i++) lhs._array[i] /= rhs._array[i];
+        return lhs;
+    }
 
     // component-wise vector add assign
     friend vec2<T> & operator += ( vec2<T> &lhs, const vec2<T> & rhs ) {
@@ -164,6 +164,11 @@ public:
 
     // vector component-wise multiply
     friend vec2<T> operator / ( const vec2<T> & lhs, const vec2<T> & rhs){
+        vec2<T> rt(lhs);
+        return rt /= rhs;
+    }
+
+    friend vec2<T> operator / (vec2<T>& lhs, vec2<T>& rhs) {
         vec2<T> rt(lhs);
         return rt /= rhs;
     }
