@@ -110,6 +110,8 @@ void Sprite2d::updateUI(int w, int h) {
 		ImGui::SliderFloat2("sprite position", pixelPosition, 0, screenDim.x);
         ImGui::SliderFloat("Trush x direction", &T[0], -200.0f, 200.0f); 
 		ImGui::SliderFloat("Trush y direction", &T[1], -200.0f, 200.0f);
+		ImGui::SliderFloat("Velocity x direction", &V.x, -200.0f, 200.0f);
+		ImGui::SliderFloat("Velocity y direction", &V.y, -200.0f, 200.0f);
 		ImGui::SliderFloat("friction coefficient", &C, 0.5f, 60.0f);
 		ImGui::SliderFloat("Step Time", &deltaT, 0.5f, 10.0f);
         if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
@@ -168,7 +170,7 @@ void Sprite2d::initSimulation(int w, int h){
 	pixelPosition = screenDim / 2;
 
 	T = vec2f(2, 2);  //N
-	V = vec2f(0, 0);   //Initial velocity
+	V = vec2f(1, 1);   //Initial velocity
 	C = 5;
 	M = 10;  //Mass of sprite
 	S = vec2f(0, 0);
@@ -261,9 +263,8 @@ void Sprite2d::initSimulation(int w, int h){
 	 vec2f k1, k2, k3, k4;
 	 static float time = 0;
 	 time += dt;
-	 vec2f T;
-	 T.x = cos(time * 0.01) * this->T.x;
-	 T.y = sin(time * 0.01) * this->T.y;
+
+	 
 	 F = (T - (C * V));
 	 A = F / M;
 	 k1 = dt * A;
@@ -285,13 +286,14 @@ void Sprite2d::initSimulation(int w, int h){
 	 // Update old velocity and displacement with the new ones
 	 V = Vnew;
 	 S = Snew;
+	 
  }
 
 void Sprite2d::stepSimulation(float w, float h,float dt){
 	screenDim = vec2f(w, h);
 	//assume dt = 10ms means uniform time interval
 	dt = deltaT;  //ms
-	step3(dt);
+	step0(dt);
 	pixelPosition = S;
 
 	//ndc viewport range [-1,1] .ie 2 in screen for every dimensions
