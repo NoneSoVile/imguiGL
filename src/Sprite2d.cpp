@@ -114,10 +114,13 @@ void Sprite2d::updateUI(int w, int h) {
 		ImGui::SliderFloat("Velocity y direction", &V.y, -200.0f, 200.0f);
 		ImGui::SliderFloat("friction coefficient", &C, 0.5f, 60.0f);
 		ImGui::SliderFloat("Step Time", &deltaT, 0.5f, 10.0f);
-        if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-            counter++;
-        ImGui::SameLine();
-        ImGui::Text("counter = %d", counter);
+        
+		ImGui::NewLine();ImGui::NewLine();ImGui::NewLine();
+		if (ImGui::Button("Reset Simulation"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+		{
+			initSimulation(screenDim.x, screenDim.y);
+		}
+       
 
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
         ImGui::End();
