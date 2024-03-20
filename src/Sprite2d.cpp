@@ -127,13 +127,13 @@ void Sprite2d::updateUI(int w, int h) {
     }
 }
 
-void Sprite2d::drawSprite(int w, int h){
+void Sprite2d::drawSprite(int w, int h, vec2f offset){
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     renderShader->Use();
     renderShader->UseAndBindTexture("ourTexture", ourTexture);
 	renderShader->setUniform2fv("scale", scale, 1);
-	renderShader->setUniform2fv("translation", translation, 1);
+	renderShader->setUniform2fv("translation", translation + offset, 1);
 	glBindVertexArray(VAO); CHECK_GL;
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO); CHECK_GL;
@@ -169,7 +169,7 @@ vec2f Sprite2d::screenToNdc(vec2f screenPosition){
 
 void Sprite2d::initSimulation(int w, int h){
 	screenDim = vec2f(w, h);
-	pixelSize = vec2f(260, 260);
+	pixelSize = vec2f(20, 20);
 	pixelPosition = screenDim / 2;
 
 	T = vec2f(2, 2);  //N
@@ -177,6 +177,11 @@ void Sprite2d::initSimulation(int w, int h){
 	C = 5;
 	M = 10;  //Mass of sprite
 	S = vec2f(0, 0);
+
+	for (size_t i = 0; i < MAX_PARTICLES; i++)
+	{
+		particles_offset[i] = i*20;
+	}
 }
 
  void Sprite2d::step0(float dt){
@@ -310,6 +315,16 @@ void Sprite2d::run(float w, float h) {
 	static float dt = 0;
 	stepSimulation(w, h, dt);
     glViewport(0, 0, w, h);
-	drawSprite(w, h);
+	for (size_t i = 0; i < MAX_PARTICLES; i++)
+	{
+		vec2f offset = 2.0/screenDim*(particles_offset[i]);
+		offset.y *= -1;
+		float temp = offset.y;
+		//offset.y = sin(temp)*MB::length(T)*0.2;
+		temp = offset.x;
+		offset.x = cos(temp*10)*0.5;
+		drawSprite(w, h, offset);
+	}
+	
     updateUI(w, h);
 }

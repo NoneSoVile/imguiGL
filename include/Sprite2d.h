@@ -7,6 +7,7 @@ using MB::vec2i;
 using MB::vec2f;
 
 class Shader;
+#define MAX_PARTICLES 400
 class Sprite2d: public ShaderTester
 {
 public:
@@ -43,13 +44,15 @@ protected:
     vec2f S; // displacement
     float deltaT = 1;
 
+    vec2f particles_offset[MAX_PARTICLES];
+
 
 protected:
     void loadMesh();
     void loadTexture();
 
     void updateUI(int w, int h);
-    void drawSprite(int w, int h);
+    void drawSprite(int w, int h, vec2f offset);
     void stepSimulation(float w, float h,float dt);
     void initSimulation(int w, int h);
 
