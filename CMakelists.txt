@@ -44,6 +44,7 @@ include_directories(${OpenCV_INCLUDE_DIRS}
                     ${GLFW3_INCLUDE_DIRS}
                     ${glm_INCLUDE_DIRS}
                     ${CMAKE_SOURCE_DIR}/include
+					${CMAKE_SOURCE_DIR}/include/3dmodel_loader
 )
 
 
