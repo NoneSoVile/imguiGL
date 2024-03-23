@@ -10,20 +10,8 @@ class Shader;
 
 
 void Sprite2d::init(int w, int h) {
-     /*create shaders
-    */
-    string vertexShaderFile = resourceFolder + std::string("shaders/basic.vert");
-    string fragShaderFile = resourceFolder + std::string("shaders/basic.frag");
-
-    renderShader = std::make_shared<Shader>();
-    renderShader->setShader(vertexShaderFile.c_str(), fragShaderFile.c_str());//geometryShaderFile.c_str()
-    if (!renderShader->isValid()) {
-        printf("failed to create shader: %s\n", vertexShaderFile.c_str());
-    }
-    else {
-        printf("succeeded to create shader: %s  programid = %d\n", 
-        vertexShaderFile.c_str(), renderShader->program);
-    }
+    /*load shaders*/
+	loadShader();
 
     /*create vertices*/
     loadMesh();
@@ -34,6 +22,23 @@ void Sprite2d::init(int w, int h) {
 
 	/*simulation initialization for sprite*/
 	initSimulation(w, h);
+}
+
+void Sprite2d::loadShader(){
+ 	/*create shaders
+    */
+    string vertexShaderFile = resourceFolder + std::string("shaders/basic.vert");
+    string fragShaderFile = resourceFolder + std::string("shaders/basic.frag");
+
+    renderShader = std::make_shared<Shader>();
+    renderShader->setShader(vertexShaderFile.c_str(), fragShaderFile.c_str());
+    if (!renderShader->isValid()) {
+        printf("failed to create shader: %s\n", vertexShaderFile.c_str());
+    }
+    else {
+        printf("succeeded to create shader: %s  programid = %d\n", 
+        vertexShaderFile.c_str(), renderShader->program);
+    }
 }
 
 void Sprite2d::loadMesh()

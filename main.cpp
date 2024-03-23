@@ -5,6 +5,7 @@
 #include "GaussianFilterShaderTester.h"
 #include "PhysicsCurve.h"
 #include "Sprite2d.h"
+#include "Mesh3d.h"
 #include "MatTester.h"
 #include <GLFW/glfw3.h>
 #include "imgui.h"
@@ -136,7 +137,7 @@ int main(int, char**)
 	GeometryShaderTester geoShaderTester;
 	GaussianFilterShaderTester gaussianFilterTester;
 	PhysicsCurve curve;
-	Sprite2d sprite;
+	Mesh3d sprite;
 	//shaderTester.init();
 	//geoShaderTester.init();
 	//gaussianFilterTester.init();
@@ -160,7 +161,7 @@ int main(int, char**)
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 		glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		//curve.run(screenW / 2, screenH);
 		sprite.run(screenW , screenH);

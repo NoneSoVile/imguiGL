@@ -5,6 +5,7 @@
 #include "NvMath.h"
 using MB::vec2i;
 using MB::vec2f;
+using MB::matrix4f;
 
 class Shader;
 #define MAX_PARTICLES 400
@@ -48,13 +49,14 @@ protected:
 
 
 protected:
-    void loadMesh();
-    void loadTexture();
+    virtual void loadShader();
+    virtual void loadMesh();
+    virtual void loadTexture();
 
-    void updateUI(int w, int h);
-    void drawSprite(int w, int h, vec2f offset);
-    void stepSimulation(float w, float h,float dt);
-    void initSimulation(int w, int h);
+    virtual void updateUI(int w, int h);
+    virtual void drawSprite(int w, int h, vec2f offset);
+    virtual void stepSimulation(float w, float h,float dt);
+    virtual void initSimulation(int w, int h);
 
     //physics model options
     void step0(float dt);
@@ -63,8 +65,8 @@ protected:
     void step3(float dt);
 
 public:
-    void init(int w, int h);
-    void run(float w, float h);
+    virtual void init(int w, int h);
+    virtual void run(float w, float h);
 
 public:
     vec2f ndcToScreen(vec2f ndcPosition);

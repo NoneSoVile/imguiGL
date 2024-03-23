@@ -23,7 +23,7 @@
 #define LOGI  printf
 #define LOGD  printf
 #define LOGE  printf
-#define PI   3.1415926
+#define PI   3.1415926f
 
 bool is_file_exist(const char* fileName);
 double getCurrentTimeSeconds();
