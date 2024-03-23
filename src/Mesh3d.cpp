@@ -49,7 +49,7 @@ void Mesh3d::updateUI(int w, int h) {
     ImGuiIO& io = ImGui::GetIO(); (void)io;
 
     ImGui::SetNextWindowBgAlpha(0.5f);
-    // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
+    
     {
         static float f = 0.0f;
         static int counter = 0;
@@ -62,6 +62,27 @@ void Mesh3d::updateUI(int w, int h) {
         ImGui::SliderFloat3("modle translation", (float*)&model_translation, -30.f, 30.0f);
         ImGui::SliderFloat3("lookAt vector", (float*)&lookat, -32.0f, 32.0f);
         ImGui::SliderFloat3("eye vector", (float*) &eye, -12.0f, 12.0f);
+
+       
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+        ImGui::Checkbox("show light settings", &show_lighting_settings);
+        ImGui::End();
+    }
+
+    if (show_lighting_settings) {
+        ImGui::Begin("Helloxxx, world!", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
+        ImGui::Text("3D light Settings");
+
+        ImGui::Checkbox("useTexture", &useTexture);
+        ImGui::SliderFloat3("light0 pos", (float*)&lightPositions[0], -200, 200);
+        ImGui::SliderFloat3("light1 pos", (float*)&lightPositions[1], -200, 200);
+        ImGui::SliderFloat3("light2 pos", (float*)&lightPositions[2], -200, 200);
+
+
+        ImGui::SliderFloat3("light0 color", (float*)&lightColors[0], 0, 1);
+        ImGui::SliderFloat3("light1 color", (float*)&lightColors[1], 0, 1);
+        ImGui::SliderFloat3("light2 color", (float*)&lightColors[2], 0, 1);
+
 
         ImGui::SliderFloat("diffusePower", (float*)&car_model_diffusePower, .0f, 12.0f);
         ImGui::SliderFloat("specularPower", (float*)&car_model_specularPower, .0f, 1300.0f);
@@ -100,23 +121,13 @@ void Mesh3d::drawSprite(int w, int h, vec2f offset) {
     float specularPower = car_model_specularPower;
     float diffusePower = car_model_diffusePower;
     
-    vec3f lightPositions[] = {
-        vec3f(200, 200, 200),
-        vec3f(-200, 200, 100),
-        vec3f(0, 100, -100),
-    };
-    vec3f lightColors[] = {
-        vec3f(0.5, 0.5, 0.5),
-        vec3f(0.6, 0.6, 0.6),
-        vec3f(1, 1, 1),
-    };
-    float lightNum = sizeof(lightPositions) / sizeof(lightPositions[0]);
     renderShader->Use(12);
     renderShader->setUniformMatrix4fv("model", model._array, 1, GL_FALSE);
     renderShader->setUniformMatrix4fv("view", view._array, 1, GL_FALSE);
     renderShader->setUniformMatrix4fv("projection", projection._array, 1, GL_FALSE);
     renderShader->setUniform1f("specularPower", specularPower);
     renderShader->setUniform1f("diffusePower", diffusePower);
+    renderShader->setUniform1i("useTexture", useTexture);
     renderShader->setUniform1i("lightNum", lightNum);
     renderShader->setUniform3fv("lights", (const float *)lightPositions, lightNum);
     renderShader->setUniform3fv("lights_Color", (const float *)lightColors, lightNum);
@@ -132,10 +143,24 @@ void Mesh3d::stepSimulation(float w, float h, float dt) {
 
 void Mesh3d::initSimulation(int w, int h) {
     
+    lightColors[0] = vec3f(0.5, 0.5, 0.5);
+    lightColors[1] = vec3f(0.6, 0.6, 0.6);
+    lightColors[2] = vec3f(1, 1, 1);
+    lightColors[3] = vec3f(1, 1, 1);
+    lightColors[4] = vec3f(1, 1, 1);
+
+    lightPositions[0] = vec3f(200, 200, 200);
+    lightPositions[1] = vec3f(-200, 200, 100);
+    lightPositions[2] = vec3f(0, 100, -100);
+    lightPositions[3] = vec3f(200, 200, 200);
+    lightPositions[4] = vec3f(200, 200, 200);
+
 }
 
 void Mesh3d::run(float w, float h)
 {
+    glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_DEPTH_TEST);
     //glDepthMask(GL_TRUE);
     glDepthFunc(GL_LEQUAL);
@@ -146,4 +171,6 @@ void Mesh3d::run(float w, float h)
 	drawSprite(w, h, vec2f(0,0));
 	
     updateUI(w, h);
+
+    glDisable(GL_BLEND);
 }
