@@ -67,11 +67,12 @@ void Mesh3d::updateUI(int w, int h) {
        
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
         ImGui::Checkbox("show light settings", &show_lighting_settings);
+        ImGui::Checkbox("show waves settings", &show_water_settings);
         ImGui::End();
     }
 
     if (show_lighting_settings) {
-        ImGui::Begin("Helloxxx, world!", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
+        ImGui::Begin("Lighting, world!", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
         ImGui::Text("3D light Settings");
 
         ImGui::Checkbox("useTexture", &useTexture);
@@ -93,15 +94,39 @@ void Mesh3d::updateUI(int w, int h) {
         ImGui::SliderFloat("specularPower", (float*)&car_model_specularPower, .0f, 1300.0f);
 
         ImGui::SliderInt("lights", (int*)&lightNum, 0, MAX_LIGHTS);
-
-
-
         ImGui::Text("===============Save settings===================");
         if (ImGui::Button("save light settings")) {
             saveArrayData();
         }
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+        ImGui::End();
+    }
+
+    if (show_water_settings) {
+        ImGui::Begin("water world!", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
+        ImGui::Text("water Settings");
+
+        ImGui::Text("===============Direction settings===================");
+        ImGui::SliderFloat2("waves0 Direction", (float*)&waves_D[0], -1, 1);
+        ImGui::SliderFloat2("waves1 Direction", (float*)&waves_D[1], -1, 1);
+        ImGui::SliderFloat2("waves2 Direction", (float*)&waves_D[2], -1, 1);
+        ImGui::SliderFloat2("waves3 Direction", (float*)&waves_D[3], -1, 1);
+        ImGui::SliderFloat2("waves4 Direction", (float*)&waves_D[4], -1, 1);
+
+        ImGui::Text("===============AWP settings===================");
+        ImGui::SliderFloat3("waves0 AWP", (float*)&waves_AWP[0], -1, 1);
+        ImGui::SliderFloat3("waves1 AWP", (float*)&waves_AWP[1], -1, 1);
+        ImGui::SliderFloat3("waves2 AWP", (float*)&waves_AWP[2], -1, 1);
+        ImGui::SliderFloat3("waves3 AWP", (float*)&waves_AWP[3], -1, 1);
+        ImGui::SliderFloat3("waves4 AWP", (float*)&waves_AWP[4], -1, 1);
 
 
+      
+        ImGui::SliderInt("waves", (int*)&waveCount, 0, MAX_WAVES);
+        ImGui::Text("===============Save settings===================");
+        if (ImGui::Button("save waves settings")) {
+            //saveArrayData();
+        }
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
         ImGui::End();
     }
@@ -185,23 +210,30 @@ void Mesh3d::drawSprite(int w, int h, vec2f offset) {
     renderShader->setUniform1f("diffusePower", diffusePower);
     renderShader->setUniform1i("useTexture", useTexture);
     renderShader->setUniform1i("lightNum", lightNum);
-    renderShader->setUniform3fv("lights", (const float *)lightPositions, lightNum);
-    renderShader->setUniform3fv("lights_Color", (const float *)lightColors, lightNum);
+    renderShader->setUniform3fv("lights", (const float*)lightPositions, lightNum);
+    renderShader->setUniform3fv("lights_Color", (const float*)lightColors, lightNum);
 
-    // int tex_surround = m_GLSurround->GetTexture(DATA_FRONT, false);
     glBindTexture(GL_TEXTURE_2D, ourTexture);
     waterModelGl->drawElements(0, 2, 1);
 }
 
 void Mesh3d::stepSimulation(float w, float h, float dt) {
-    
+    static float time = 0;
+    dt = 0.001;
+    time += dt;
+
+    renderShader->Use(12);
+    renderShader->setUniform1f("time", time);
+    renderShader->setUniform1i("waveCount", waveCount);
+    renderShader->setUniform2fv("waves_D", (const float*)waves_D, waveCount);
+    renderShader->setUniform3fv("waves_AWP", (const float*)waves_AWP, waveCount);
 }
 
 void Mesh3d::initSimulation(int w, int h) {
     for (size_t i = 0; i < MAX_LIGHTS; i++)
     {
         lightColors[i] = vec3f(0.f);
-        lightPositions[i]  = vec3f(0.f, 100.f, 0.f);
+        lightPositions[i]  = vec3f(0.f, 200.f, 0.f);
     }
     
     lightColors[0] = vec3f(0.5, 0.5, 0.5);

@@ -8,6 +8,7 @@ in highp vec3 vNormalMV;
 
 out highp vec4 color;
 
+#define MAX_LIGHTS 20
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
@@ -15,8 +16,8 @@ uniform mat4 projection;
 uniform mediump float specularPower;
 uniform mediump float diffusePower;
 uniform mediump int lightNum;
-uniform mediump vec3 lights[5];
-uniform mediump vec3 lights_Color[5];
+uniform mediump vec3 lights[MAX_LIGHTS];
+uniform mediump vec3 lights_Color[MAX_LIGHTS];
 
 uniform sampler2D ourTexture;
 uniform int useTexture;

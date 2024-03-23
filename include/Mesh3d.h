@@ -10,6 +10,7 @@ protected:
 
     //gui data
     bool show_lighting_settings = 0;
+    bool show_water_settings = 0;
     bool useTexture = 0;
     vec3f eye = vec3f(0.f, 1.f, 3.f);
     vec3f lookat;
@@ -21,6 +22,12 @@ protected:
     vec3f lightColors[MAX_LIGHTS];
     vec3f lightPositions[MAX_LIGHTS];
     int lightNum = 3;
+
+    //simualation
+#define MAX_WAVES 20
+    vec2f waves_D[MAX_WAVES];
+    vec3f waves_AWP[MAX_WAVES];
+    int waveCount = 3;
 protected:
     virtual void loadShader();
     virtual void loadMesh();
