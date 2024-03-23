@@ -121,11 +121,16 @@ void Mesh3d::updateUI(int w, int h) {
         ImGui::SliderFloat3("waves4 AWP", (float*)&waves_AWP[4], -1, 1);
 
 
-      
+        
+        ImGui::SliderFloat("time step", (float*)&timestep, 0.0001, 0.1);
         ImGui::SliderInt("waves", (int*)&waveCount, 0, MAX_WAVES);
         ImGui::Text("===============Save settings===================");
         if (ImGui::Button("save waves settings")) {
-            //saveArrayData();
+            saveWavesData();
+        }
+        ImGui::Text("===============reload waves settings===================");
+        if (ImGui::Button("load waves settings")) {
+            loadWavesData();
         }
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
         ImGui::End();
@@ -171,6 +176,44 @@ void Mesh3d::loadArrayData() {
         lightPositions[i] = fileConfig.Readvec3f(key);
     }
 
+}
+
+void Mesh3d::loadWavesData() {
+    string path = resourceFolder + "waves_data.txt";
+    Config fileConfig;
+    fileConfig.LoadConfig(path);
+
+    for (size_t i = 0; i < MAX_WAVES; i++)
+    {
+        std::string key = std::string("waves_D") + std::to_string(i);
+        waves_D[i] = fileConfig.Readvec2f(key);
+    }
+
+    for (size_t i = 0; i < MAX_WAVES; i++)
+    {
+        std::string key = std::string("waves_AWP") + std::to_string(i);
+        waves_AWP[i] = fileConfig.Readvec3f(key);
+    }
+
+}
+
+void Mesh3d::saveWavesData() {
+    string path = resourceFolder + "waves_data.txt";
+    Config fileConfig;
+    fileConfig.LoadConfig(path);
+
+    for (size_t i = 0; i < MAX_WAVES; i++)
+    {
+        std::string key = std::string("waves_D") + std::to_string(i);
+        fileConfig.Add(key, waves_D[i]);
+    }
+
+    for (size_t i = 0; i < MAX_WAVES; i++)
+    {
+        std::string key = std::string("waves_AWP") + std::to_string(i);
+        fileConfig.Add(key, waves_AWP[i]);
+    }
+    fileConfig.Save();
 }
 
 void Mesh3d::drawSprite(int w, int h, vec2f offset) {
@@ -219,7 +262,6 @@ void Mesh3d::drawSprite(int w, int h, vec2f offset) {
 
 void Mesh3d::stepSimulation(float w, float h, float dt) {
     static float time = 0;
-    dt = 0.001;
     time += dt;
 
     renderShader->Use(12);
@@ -260,8 +302,8 @@ void Mesh3d::run(float w, float h)
     //glDepthMask(GL_TRUE);
     glDepthFunc(GL_LEQUAL);
     glDisable(GL_CULL_FACE);
-    static float dt = 0;
-	stepSimulation(w, h, dt);
+    
+	stepSimulation(w, h, timestep);
     glViewport(0, 0, w, h);
 	drawSprite(w, h, vec2f(0,0));
 	

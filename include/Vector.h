@@ -199,7 +199,7 @@ public:
 
     friend std::ostream& operator<<(std::ostream& os, const vec2<T>& obj)
     {
-        os <<  obj.x << ", " << obj.y << 
+        os << obj.x << ", " << obj.y;
         return os;
     }
 

@@ -34,7 +34,7 @@ void main() {
         vec3 AWP = waves_AWP[i];
         vec2 D = waves_D[i];
         float A = AWP.x*1.0;
-        float W = AWP.y*10.0;
+        float W = AWP.y*130.0;
         float P = AWP.z*10.0;
         vec2 posXZ = position4.xz;
         position4.y += A * sin(dot(D, posXZ) * W + time * P);

@@ -28,6 +28,7 @@ protected:
     vec2f waves_D[MAX_WAVES];
     vec3f waves_AWP[MAX_WAVES];
     int waveCount = 3;
+    float timestep = 0.01;
 protected:
     virtual void loadShader();
     virtual void loadMesh();
@@ -40,6 +41,8 @@ protected:
 
     void saveArrayData();
     void loadArrayData();
+    void saveWavesData();
+    void loadWavesData();
 
 public:
     virtual void run(float w, float h);
