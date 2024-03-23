@@ -8,6 +8,7 @@
 /// Basic float vector support
 
 #include <algorithm>
+#include <iostream>
 
 namespace MB {
 
@@ -194,6 +195,12 @@ public:
                 return true;
         }
         return false;
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, const vec2<T>& obj)
+    {
+        os <<  obj.x << ", " << obj.y << 
+        return os;
     }
 
     //data intentionally left public to allow vec2.x
@@ -452,6 +459,14 @@ public:
         return r;
     }
 
+    friend std::ostream& operator<<(std::ostream& os, const vec3<T>& obj)
+    {
+        os <<  obj.x << ", " << obj.y << ", " << obj.z;
+        return os;
+    }
+
+    
+
     //data intentionally left public to allow vec2.x
     union {
         struct {
@@ -654,6 +669,12 @@ public:
                 return true;
         }
         return false;
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, const vec4<T>& obj)
+    {
+        os <<  obj.x << ", " << obj.y << ", " << obj.z << ", " << obj.w;
+        return os;
     }
 
     //data intentionally left public to allow vec2.x

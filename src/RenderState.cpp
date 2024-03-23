@@ -116,7 +116,7 @@ void RenderState::LoadConfig(string configFileName){
     drawARGUI = fileConfig.Read("drawARGUI", drawARGUI);
     printGear = fileConfig.Read("printGear", printGear);
 
-    //std::vector<std::vector<float>> mat = fileConfig.ReadMatrix<float>("x_matrix", "|", ",");
+    std::vector<std::vector<float>> mat = fileConfig.ReadMatrix<float>("x_matrix", "|", ",");
     //matrix4f mat = fileConfig.Readmatrix4f("x_matrix", "|", ",");
     //car Info
     path = resourceFolder + "resource/carInfo.txt";

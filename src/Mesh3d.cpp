@@ -2,6 +2,7 @@
 #include "Shader.h"
 #include "ModelObj.h"
 #include "ModelGL.h"
+#include "FileConfig.h"
 
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
@@ -11,8 +12,8 @@
 void Mesh3d::loadShader() {
     /*create shaders
     */
-    string vertexShaderFile = resourceFolder + std::string("shaders/basic3d.vert");
-    string fragShaderFile = resourceFolder + std::string("shaders/basic3d.frag");
+    string vertexShaderFile = resourceFolder + std::string("shaders/water.vert");
+    string fragShaderFile = resourceFolder + std::string("shaders/water.frag");
 
     renderShader = std::make_shared<Shader>();
     renderShader->setShader(vertexShaderFile.c_str(), fragShaderFile.c_str());
@@ -77,19 +78,74 @@ void Mesh3d::updateUI(int w, int h) {
         ImGui::SliderFloat3("light0 pos", (float*)&lightPositions[0], -200, 200);
         ImGui::SliderFloat3("light1 pos", (float*)&lightPositions[1], -200, 200);
         ImGui::SliderFloat3("light2 pos", (float*)&lightPositions[2], -200, 200);
+        ImGui::SliderFloat3("light3 pos", (float*)&lightPositions[3], -200, 200);
+        ImGui::SliderFloat3("light4 pos", (float*)&lightPositions[4], -200, 200);
 
-
+        ImGui::Text("===============color settings===================");
         ImGui::SliderFloat3("light0 color", (float*)&lightColors[0], 0, 1);
         ImGui::SliderFloat3("light1 color", (float*)&lightColors[1], 0, 1);
         ImGui::SliderFloat3("light2 color", (float*)&lightColors[2], 0, 1);
+        ImGui::SliderFloat3("light3 color", (float*)&lightColors[3], 0, 1);
+        ImGui::SliderFloat3("light4 color", (float*)&lightColors[4], 0, 1);
 
 
         ImGui::SliderFloat("diffusePower", (float*)&car_model_diffusePower, .0f, 12.0f);
         ImGui::SliderFloat("specularPower", (float*)&car_model_specularPower, .0f, 1300.0f);
 
+        ImGui::SliderInt("lights", (int*)&lightNum, 0, MAX_LIGHTS);
+
+
+
+        ImGui::Text("===============Save settings===================");
+        if (ImGui::Button("save light settings")) {
+            saveArrayData();
+        }
+
+
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
         ImGui::End();
     }
+}
+
+void Mesh3d::saveArrayData() {
+    string path = resourceFolder + "arraydata.txt";
+    Config fileConfig;
+    fileConfig.LoadConfig(path);
+
+    for (size_t i = 0; i < MAX_LIGHTS; i++)
+    {
+        std::string key = std::string("lightColors") + std::to_string(i);
+        fileConfig.Add(key, lightColors[i]);
+    }
+
+    for (size_t i = 0; i < MAX_LIGHTS; i++)
+    {
+        std::string key = std::string("lightPositions") + std::to_string(i);
+        fileConfig.Add(key, lightPositions[i]);
+    }
+
+
+    fileConfig.Save();
+
+}
+#define COLOR_KEY(i)  lightColors[i]
+void Mesh3d::loadArrayData() {
+    string path = resourceFolder + "arraydata.txt";
+    Config fileConfig;
+    fileConfig.LoadConfig(path);
+
+    for (size_t i = 0; i < MAX_LIGHTS; i++)
+    {
+        std::string key = std::string("lightColors") + std::to_string(i);
+        lightColors[i] = fileConfig.Readvec3f(key);
+    }
+
+    for (size_t i = 0; i < MAX_LIGHTS; i++)
+    {
+        std::string key = std::string("lightPositions") + std::to_string(i);
+        lightPositions[i] = fileConfig.Readvec3f(key);
+    }
+
 }
 
 void Mesh3d::drawSprite(int w, int h, vec2f offset) {
@@ -142,18 +198,25 @@ void Mesh3d::stepSimulation(float w, float h, float dt) {
 }
 
 void Mesh3d::initSimulation(int w, int h) {
+    for (size_t i = 0; i < MAX_LIGHTS; i++)
+    {
+        lightColors[i] = vec3f(0.f);
+        lightPositions[i]  = vec3f(0.f, 100.f, 0.f);
+    }
     
     lightColors[0] = vec3f(0.5, 0.5, 0.5);
     lightColors[1] = vec3f(0.6, 0.6, 0.6);
-    lightColors[2] = vec3f(1, 1, 1);
-    lightColors[3] = vec3f(1, 1, 1);
-    lightColors[4] = vec3f(1, 1, 1);
+    lightColors[2] = vec3f(0.5, 0.5, 0.5);
+    lightColors[3] = vec3f(0.5, 0.5, 0.5);
+    lightColors[4] = vec3f(0.5, 0.5, 0.5);
 
     lightPositions[0] = vec3f(200, 200, 200);
     lightPositions[1] = vec3f(-200, 200, 100);
     lightPositions[2] = vec3f(0, 100, -100);
     lightPositions[3] = vec3f(200, 200, 200);
     lightPositions[4] = vec3f(200, 200, 200);
+
+    loadArrayData();
 
 }
 

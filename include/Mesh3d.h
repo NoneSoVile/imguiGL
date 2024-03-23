@@ -2,7 +2,7 @@
 #include "Sprite2d.h"
 class ModelObj;
 class ModelGL;
-#define MAX_LIGHTS 10
+#define MAX_LIGHTS 15
 class Mesh3d : public Sprite2d {
 protected:
     std::shared_ptr<ModelObj> waterModel;
@@ -20,7 +20,7 @@ protected:
     //light
     vec3f lightColors[MAX_LIGHTS];
     vec3f lightPositions[MAX_LIGHTS];
-    float lightNum = 3;
+    int lightNum = 3;
 protected:
     virtual void loadShader();
     virtual void loadMesh();
@@ -30,6 +30,9 @@ protected:
     virtual void drawSprite(int w, int h, vec2f offset);
     virtual void stepSimulation(float w, float h,float dt);
     virtual void initSimulation(int w, int h);
+
+    void saveArrayData();
+    void loadArrayData();
 
 public:
     virtual void run(float w, float h);

@@ -71,6 +71,8 @@ public:
     // Read an array of values from the configuration
     template<class T>
     std::vector<T> ReadArray(const std::string& key, const std::string& separator=",#_&%$ @") const;
+    template<class T>
+    void WriteArrayToFile(const std::string& key, const std::vector<T>& values, const std::string& separators=",#_&%$ @");
 
     vec2f Readvec2f(const std::string& key, const std::string& separator = ",#_&%$ @") ;
     vec3f Readvec3f(const std::string& key, const std::string& separator = ",#_&%$ @");
@@ -287,6 +289,34 @@ std::vector<T> Config::ReadArray(const std::string& key, const std::string& sepa
     }
 
     return result;
+}
+
+template<class T>
+void Config::WriteArrayToFile(const std::string& key, const std::vector<T>& values, const std::string& separators)
+{
+    std::ofstream file("output.txt", std::ios::app); // Open the file in append mode
+
+    if (file.is_open())
+    {
+        file << key << " = ";
+
+        for (size_t i = 0; i < values.size(); ++i)
+        {
+            file << values[i];
+
+            if (i < values.size() - 1)
+            {
+                file << separators;
+            }
+        }
+
+        file << std::endl;
+        file.close();
+    }
+    else
+    {
+        std::cerr << "Error: Unable to open file for writing." << std::endl;
+    }
 }
 
 
