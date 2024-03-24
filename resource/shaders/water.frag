@@ -21,6 +21,7 @@ uniform mediump vec3 lights_Color[MAX_LIGHTS];
 
 uniform sampler2D ourTexture;
 uniform int useTexture;
+uniform float alphaColor;
 
 const float PI = 3.1415926;
 
@@ -70,5 +71,5 @@ void main() {
      }
      
      finalColor.xyz = finalColor.xyz*(intense + intenseOfMainLight);
-     color = finalColor * vec4(vec3(1.0, 1.0, 1.0), 1.0);
+     color = finalColor * vec4(vec3(1.0, 1.0, 1.0), alphaColor);
  }

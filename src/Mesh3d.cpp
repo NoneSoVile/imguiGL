@@ -62,7 +62,7 @@ void Mesh3d::updateUI(int w, int h) {
         ImGui::SliderFloat3("model rotation", (float*)&model_rot, -PI * 2, PI * 2);
         ImGui::SliderFloat3("modle translation", (float*)&model_translation, -30.f, 30.0f);
         ImGui::SliderFloat3("lookAt vector", (float*)&lookat, -32.0f, 32.0f);
-        ImGui::SliderFloat3("eye vector", (float*) &eye, -12.0f, 12.0f);
+        ImGui::SliderFloat3("eye vector", (float*) &eye, -22.0f, 22.0f);
 
         ImGui::Text("===============Save Model View settings===================");
         if (ImGui::Button("save ModelView settings")) {
@@ -79,34 +79,38 @@ void Mesh3d::updateUI(int w, int h) {
         ImGui::Checkbox("show waves settings", &show_water_settings);
         ImGui::End();
     }
+#define LIGHT_SLIDER_POS_ARRAY(i, name) ImGui::SliderFloat3((string("light") + std::to_string(i) + " Position").c_str(), (float*)&name[i], -200, 200);
+#define LIGHT_SLIDER_COLOR_ARRAY(i, name) ImGui::SliderFloat3((string("light") + std::to_string(i) + " Color").c_str(), (float*)&name[i], 0, 1);
 
     if (show_lighting_settings) {
         ImGui::Begin("Lighting, world!", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
         ImGui::Text("3D light Settings");
 
         ImGui::Checkbox("useTexture", &useTexture);
-        ImGui::SliderFloat3("light0 pos", (float*)&lightPositions[0], -200, 200);
-        ImGui::SliderFloat3("light1 pos", (float*)&lightPositions[1], -200, 200);
-        ImGui::SliderFloat3("light2 pos", (float*)&lightPositions[2], -200, 200);
-        ImGui::SliderFloat3("light3 pos", (float*)&lightPositions[3], -200, 200);
-        ImGui::SliderFloat3("light4 pos", (float*)&lightPositions[4], -200, 200);
+        ImGui::Text("===============Save | Load light settings===================");
+        if (ImGui::Button("save light settings")) {
+            saveLightingArrayData();
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("load light settings")) {
+            loadLightingArrayData();
+        }
+        for (size_t i = 0; i < lightNum; i++)
+        {
+            LIGHT_SLIDER_POS_ARRAY(i, lightPositions);
+        }
+        for (size_t i = 0; i < lightNum; i++)
+        {
+            LIGHT_SLIDER_COLOR_ARRAY(i, lightColors);
+        }
+        
 
-        ImGui::Text("===============color settings===================");
-        ImGui::SliderFloat3("light0 color", (float*)&lightColors[0], 0, 1);
-        ImGui::SliderFloat3("light1 color", (float*)&lightColors[1], 0, 1);
-        ImGui::SliderFloat3("light2 color", (float*)&lightColors[2], 0, 1);
-        ImGui::SliderFloat3("light3 color", (float*)&lightColors[3], 0, 1);
-        ImGui::SliderFloat3("light4 color", (float*)&lightColors[4], 0, 1);
-
-
+        ImGui::SliderFloat("alphaColor", (float*)&alphaColor, .0f, 1.0f);
         ImGui::SliderFloat("diffusePower", (float*)&model_diffusePower, .0f, 12.0f);
         ImGui::SliderFloat("specularPower", (float*)&model_specularPower, .0f, 1300.0f);
 
         ImGui::SliderInt("lights", (int*)&lightNum, 0, MAX_LIGHTS);
-        ImGui::Text("===============Save settings===================");
-        if (ImGui::Button("save light settings")) {
-            saveLightingArrayData();
-        }
+
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
         ImGui::End();
     }
@@ -115,7 +119,14 @@ void Mesh3d::updateUI(int w, int h) {
     if (show_water_settings) {
         ImGui::Begin("water world!", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
         ImGui::Text("water Settings");
-
+        ImGui::Text("===============Save | Load settings===================");
+        if (ImGui::Button("save waves settings")) {
+            saveWavesData();
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("load waves settings")) {
+            loadWavesData();
+        }
         ImGui::Text("===============Direction settings===================");
 
         for (size_t i = 0; i < waveCount; i++)
@@ -134,14 +145,7 @@ void Mesh3d::updateUI(int w, int h) {
         ImGui::SliderFloat("time step", (float*)&timestep, 0.0001, 0.1);
         ImGui::SliderInt("waves", (int*)&waveCount, 0, MAX_WAVES);
         ImGui::SliderFloat("waves power", (float*)&wavePower, 1.0, 10.0);
-        ImGui::Text("===============Save settings===================");
-        if (ImGui::Button("save waves settings")) {
-            saveWavesData();
-        }
-        ImGui::Text("===============reload waves settings===================");
-        if (ImGui::Button("load waves settings")) {
-            loadWavesData();
-        }
+
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
         ImGui::End();
     }
@@ -209,7 +213,7 @@ void Mesh3d::loadWavesData() {
         std::string key = std::string("waves_AWP") + std::to_string(i);
         waves_AWP[i] = fileConfig.Readvec3f(key);
     }
-
+    CONFIG_READ(waveCount);
 }
 
 void Mesh3d::saveWavesData() {
@@ -228,6 +232,7 @@ void Mesh3d::saveWavesData() {
         std::string key = std::string("waves_AWP") + std::to_string(i);
         fileConfig.Add(key, waves_AWP[i]);
     }
+    CONFIG_ADD(waveCount);
     fileConfig.Save();
 }
 
@@ -296,6 +301,7 @@ void Mesh3d::drawSprite(int w, int h, vec2f offset) {
     renderShader->setUniform1i("lightNum", lightNum);
     renderShader->setUniform3fv("lights", (const float*)lightPositions, lightNum);
     renderShader->setUniform3fv("lights_Color", (const float*)lightColors, lightNum);
+    renderShader->setUniform1f("alphaColor", alphaColor);
 
     glBindTexture(GL_TEXTURE_2D, ourTexture);
     waterModelGl->drawElements(0, 2, 1);
@@ -341,9 +347,10 @@ void Mesh3d::run(float w, float h)
     glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_DEPTH_TEST);
-    //glDepthMask(GL_TRUE);
+    //glDepthMask(GL_FALSE);
     glDepthFunc(GL_LEQUAL);
-    glDisable(GL_CULL_FACE);
+    glEnable(GL_CULL_FACE);
+    glColorMask(true, true, true, true);
     
 	stepSimulation(w, h, timestep);
     glViewport(0, 0, w, h);

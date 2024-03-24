@@ -24,6 +24,7 @@ protected:
     float model_diffusePower = 10;
     float model_specularPower = 10;
     int lightNum = 3;
+    float alphaColor = 1.0;
 
     //simualation
 #define MAX_WAVES 20
