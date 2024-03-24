@@ -1,0 +1,5 @@
+eye = 0, 1.653, 3
+lookat = 0, -0, 0
+model_rot = 0.205, 1.57, 0
+model_scale = 9.457, 1, 12
+model_translation = 0, 0, -4.239

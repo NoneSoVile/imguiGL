@@ -30,6 +30,9 @@ void main() {
 
     vec4 position4 = vec4(position, 1.0f);
     //water height of vertices calculation
+
+    float dpdx = 0.0;
+    float dpdz = 0.0;
     for(int i = 0; i < waveCount; i++){
         vec3 AWP = waves_AWP[i];
         vec2 D = waves_D[i];
@@ -38,16 +41,21 @@ void main() {
         float P = AWP.z*10.0;
         vec2 posXZ = position4.xz;
         position4.y += A * sin(dot(D, posXZ) * W + time * P);
+        dpdx += W * D.x* A* cos(dot(D, posXZ) * W + time * P);
+        dpdz += W * D.y* A* cos(dot(D, posXZ) * W + time * P);
     }
+
+    
+    
         //
     //
     vPosition = position4;
-    vNormal = normal;
+    vNormal = vec3(-dpdx, 1.0, -dpdz);//normal;
     vTexCoord = texCoord;
 
     vec4 p = MV*position4;
     mat4 inverse_mv = transpose(inverse(MV));
-    vec3 n = (inverse_mv*vec4(normal, 0.0)).xyz;//vec3(0.0, 0.0, 1.0);
+    vec3 n = (inverse_mv*vec4(vNormal, 0.0)).xyz;//vec3(0.0, 0.0, 1.0);
     vPositionMV = p;
     vNormalMV = n = normalize(n);
     gl_Position = MVP*position4;
