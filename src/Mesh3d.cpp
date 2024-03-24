@@ -27,7 +27,7 @@ void Mesh3d::loadShader() {
 }
 
 void Mesh3d::loadMesh() {
-    string waterModelFile = resourceFolder + "models/plane100x100.obj";
+    string waterModelFile = resourceFolder + "models/plane300x300.obj";
     waterModel.reset((ModelObj*)ModelObj::CreateFromObjFile(waterModelFile.c_str(), 1.0f, false, false, false));
     if (!waterModel) {
         printf("failed to load water model object: %s \n", waterModelFile.c_str());
@@ -133,6 +133,7 @@ void Mesh3d::updateUI(int w, int h) {
       
         ImGui::SliderFloat("time step", (float*)&timestep, 0.0001, 0.1);
         ImGui::SliderInt("waves", (int*)&waveCount, 0, MAX_WAVES);
+        ImGui::SliderFloat("waves power", (float*)&wavePower, 1.0, 10.0);
         ImGui::Text("===============Save settings===================");
         if (ImGui::Button("save waves settings")) {
             saveWavesData();
@@ -306,6 +307,7 @@ void Mesh3d::stepSimulation(float w, float h, float dt) {
 
     renderShader->Use(12);
     renderShader->setUniform1f("time", time);
+    renderShader->setUniform1f("waves_Power", wavePower);
     renderShader->setUniform1i("waveCount", waveCount);
     renderShader->setUniform2fv("waves_D", (const float*)waves_D, waveCount);
     renderShader->setUniform3fv("waves_AWP", (const float*)waves_AWP, waveCount);

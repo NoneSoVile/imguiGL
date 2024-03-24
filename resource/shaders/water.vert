@@ -21,6 +21,7 @@ uniform int waveCount;
 uniform vec2 waves_D[MAX_WAVES];
 uniform vec3 waves_AWP[MAX_WAVES];
 uniform float time;
+uniform float waves_Power;
 const float PI = 3.1415926;
 
 void main() {
@@ -33,22 +34,34 @@ void main() {
 
     float dpdx = 0.0;
     float dpdz = 0.0;
-    for(int i = 0; i < waveCount; i++){
-        vec3 AWP = waves_AWP[i];
-        vec2 D = waves_D[i];
-        float A = AWP.x*1.0;
-        float W = AWP.y*130.0;
-        float P = AWP.z*10.0;
-        vec2 posXZ = position4.xz;
-        position4.y += A * sin(dot(D, posXZ) * W + time * P);
-        dpdx += W * D.x* A* cos(dot(D, posXZ) * W + time * P);
-        dpdz += W * D.y* A* cos(dot(D, posXZ) * W + time * P);
+    if(waves_Power <= 1.01){
+        for(int i = 0; i < waveCount; i++){
+            vec3 AWP = waves_AWP[i];
+            vec2 D = waves_D[i];
+            float A = AWP.x*1.0;
+            float W = AWP.y*130.0;
+            float P = AWP.z*10.0;
+            vec2 posXZ = position4.xz;
+            position4.y += A * sin(dot(D, posXZ) * W + time * P);
+            dpdx += W * D.x* A* cos(dot(D, posXZ) * W + time * P);
+            dpdz += W * D.y* A* cos(dot(D, posXZ) * W + time * P);
+    }
+    }else{
+        for(int i = 0; i < waveCount; i++){
+            vec3 AWP = waves_AWP[i];
+            vec2 D = waves_D[i];
+            float A = AWP.x*1.0;
+            float W = AWP.y*130.0;
+            float P = AWP.z*10.0;
+            vec2 posXZ = position4.xz;
+            position4.y += 2.0*A * pow(0.5*(sin(dot(D, posXZ) * W + time * P) + 1.0), waves_Power);
+            dpdx += waves_Power * W * D.x* A* cos(dot(D, posXZ) * W + time * P) * pow(0.5*(sin(dot(D, posXZ) * W + time * P) + 1.0), waves_Power - 1.0);
+            dpdz += waves_Power * W * D.y* A* cos(dot(D, posXZ) * W + time * P) * pow(0.5*(sin(dot(D, posXZ) * W + time * P) + 1.0), waves_Power - 1.0);
+        }
     }
 
+
     
-    
-        //
-    //
     vPosition = position4;
     vNormal = vec3(-dpdx, 1.0, -dpdz);//normal;
     vTexCoord = texCoord;

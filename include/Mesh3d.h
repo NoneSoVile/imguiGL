@@ -31,6 +31,7 @@ protected:
     vec3f waves_AWP[MAX_WAVES];
     int waveCount = 3;
     float timestep = 0.01;
+    float wavePower = 1.0;
 protected:
     virtual void loadShader();
     virtual void loadMesh();
