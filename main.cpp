@@ -43,7 +43,7 @@ using namespace std;
 using cv::COLOR_RGB2BGRA;
 
 #define WINDOW_WIDTH 2300
-#define WINDOW_HEIGHT 1560
+#define WINDOW_HEIGHT 1360
 
 #define VIDEO_WIDTH 1280
 #define VIDEO_HEIGHT 960

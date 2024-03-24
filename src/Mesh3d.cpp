@@ -64,8 +64,17 @@ void Mesh3d::updateUI(int w, int h) {
         ImGui::SliderFloat3("lookAt vector", (float*)&lookat, -32.0f, 32.0f);
         ImGui::SliderFloat3("eye vector", (float*) &eye, -12.0f, 12.0f);
 
-       
+        ImGui::Text("===============Save Model View settings===================");
+        if (ImGui::Button("save ModelView settings")) {
+            saveModelViewData();
+        }
+        ImGui::Text("===============Reload Model View settings===================");
+        if (ImGui::Button("Reload ModelView settings")) {
+            loadModelViewData();
+        }
+
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+        
         ImGui::Checkbox("show light settings", &show_lighting_settings);
         ImGui::Checkbox("show waves settings", &show_water_settings);
         ImGui::End();
@@ -90,38 +99,38 @@ void Mesh3d::updateUI(int w, int h) {
         ImGui::SliderFloat3("light4 color", (float*)&lightColors[4], 0, 1);
 
 
-        ImGui::SliderFloat("diffusePower", (float*)&car_model_diffusePower, .0f, 12.0f);
-        ImGui::SliderFloat("specularPower", (float*)&car_model_specularPower, .0f, 1300.0f);
+        ImGui::SliderFloat("diffusePower", (float*)&model_diffusePower, .0f, 12.0f);
+        ImGui::SliderFloat("specularPower", (float*)&model_specularPower, .0f, 1300.0f);
 
         ImGui::SliderInt("lights", (int*)&lightNum, 0, MAX_LIGHTS);
         ImGui::Text("===============Save settings===================");
         if (ImGui::Button("save light settings")) {
-            saveArrayData();
+            saveLightingArrayData();
         }
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
         ImGui::End();
     }
-
+    #define SLIDER_FLOAT2_ARRAY(i, name) ImGui::SliderFloat2((string("waves") + std::to_string(i) + " Direction").c_str(), (float*)&name[i], -1, 1);
+    #define SLIDER_FLOAT3_ARRAY(i, name) ImGui::SliderFloat3((string("waves") + std::to_string(i) + " AWP").c_str(), (float*)&name[i], -1, 1);
     if (show_water_settings) {
         ImGui::Begin("water world!", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
         ImGui::Text("water Settings");
 
         ImGui::Text("===============Direction settings===================");
-        ImGui::SliderFloat2("waves0 Direction", (float*)&waves_D[0], -1, 1);
-        ImGui::SliderFloat2("waves1 Direction", (float*)&waves_D[1], -1, 1);
-        ImGui::SliderFloat2("waves2 Direction", (float*)&waves_D[2], -1, 1);
-        ImGui::SliderFloat2("waves3 Direction", (float*)&waves_D[3], -1, 1);
-        ImGui::SliderFloat2("waves4 Direction", (float*)&waves_D[4], -1, 1);
+
+        for (size_t i = 0; i < waveCount; i++)
+        {
+            SLIDER_FLOAT2_ARRAY(i, waves_D);
+        }
+        
 
         ImGui::Text("===============AWP settings===================");
-        ImGui::SliderFloat3("waves0 AWP", (float*)&waves_AWP[0], -1, 1);
-        ImGui::SliderFloat3("waves1 AWP", (float*)&waves_AWP[1], -1, 1);
-        ImGui::SliderFloat3("waves2 AWP", (float*)&waves_AWP[2], -1, 1);
-        ImGui::SliderFloat3("waves3 AWP", (float*)&waves_AWP[3], -1, 1);
-        ImGui::SliderFloat3("waves4 AWP", (float*)&waves_AWP[4], -1, 1);
 
-
-        
+        for (size_t i = 0; i < waveCount; i++)
+        {
+            SLIDER_FLOAT3_ARRAY(i, waves_AWP);
+        }
+      
         ImGui::SliderFloat("time step", (float*)&timestep, 0.0001, 0.1);
         ImGui::SliderInt("waves", (int*)&waveCount, 0, MAX_WAVES);
         ImGui::Text("===============Save settings===================");
@@ -136,8 +145,10 @@ void Mesh3d::updateUI(int w, int h) {
         ImGui::End();
     }
 }
-
-void Mesh3d::saveArrayData() {
+#define CONFIG_ADD(var) fileConfig.Add((#var), var)
+#define CONFIG_READ_VEC3F(var) var = fileConfig.Readvec3f(#var)
+#define CONFIG_READ(var) var = fileConfig.Read(#var, var)
+void Mesh3d::saveLightingArrayData() {
     string path = resourceFolder + "arraydata.txt";
     Config fileConfig;
     fileConfig.LoadConfig(path);
@@ -154,12 +165,13 @@ void Mesh3d::saveArrayData() {
         fileConfig.Add(key, lightPositions[i]);
     }
 
-
+    CONFIG_ADD(model_diffusePower);
+    CONFIG_ADD(model_specularPower);
     fileConfig.Save();
 
 }
 #define COLOR_KEY(i)  lightColors[i]
-void Mesh3d::loadArrayData() {
+void Mesh3d::loadLightingArrayData() {
     string path = resourceFolder + "arraydata.txt";
     Config fileConfig;
     fileConfig.LoadConfig(path);
@@ -175,7 +187,9 @@ void Mesh3d::loadArrayData() {
         std::string key = std::string("lightPositions") + std::to_string(i);
         lightPositions[i] = fileConfig.Readvec3f(key);
     }
-
+    CONFIG_READ(model_specularPower);
+    CONFIG_READ(model_diffusePower);
+    
 }
 
 void Mesh3d::loadWavesData() {
@@ -216,6 +230,32 @@ void Mesh3d::saveWavesData() {
     fileConfig.Save();
 }
 
+
+void Mesh3d::saveModelViewData(){
+    string path = resourceFolder + "model_view_data.txt";
+    Config fileConfig;
+    fileConfig.LoadConfig(path);
+
+    CONFIG_ADD(model_scale);
+    CONFIG_ADD(model_translation);
+    CONFIG_ADD(model_rot);
+    CONFIG_ADD(lookat);
+    CONFIG_ADD(eye);
+
+    fileConfig.Save();
+}
+
+void Mesh3d::loadModelViewData(){
+    string path = resourceFolder + "model_view_data.txt";
+    Config fileConfig;
+    fileConfig.LoadConfig(path);
+    CONFIG_READ_VEC3F(model_scale);
+    CONFIG_READ_VEC3F(model_translation);
+    CONFIG_READ_VEC3F(model_rot);
+    CONFIG_READ_VEC3F(lookat);
+    CONFIG_READ_VEC3F(eye);
+}
+
 void Mesh3d::drawSprite(int w, int h, vec2f offset) {
     vec3f eye = vec3f(this->eye.x, this->eye.y, this->eye.z);
     vec3f at(lookat.x, lookat.y, lookat.z);
@@ -242,8 +282,8 @@ void Mesh3d::drawSprite(int w, int h, vec2f offset) {
     MB::perspective(projection, fovy,
         aspect,
         near, far);
-    float specularPower = car_model_specularPower;
-    float diffusePower = car_model_diffusePower;
+    float specularPower = model_specularPower;
+    float diffusePower = model_diffusePower;
     
     renderShader->Use(12);
     renderShader->setUniformMatrix4fv("model", model._array, 1, GL_FALSE);
@@ -290,7 +330,7 @@ void Mesh3d::initSimulation(int w, int h) {
     lightPositions[3] = vec3f(200, 200, 200);
     lightPositions[4] = vec3f(200, 200, 200);
 
-    loadArrayData();
+    loadLightingArrayData();
 
 }
 

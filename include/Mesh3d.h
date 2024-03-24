@@ -21,6 +21,8 @@ protected:
     //light
     vec3f lightColors[MAX_LIGHTS];
     vec3f lightPositions[MAX_LIGHTS];
+    float model_diffusePower = 10;
+    float model_specularPower = 10;
     int lightNum = 3;
 
     //simualation
@@ -39,10 +41,12 @@ protected:
     virtual void stepSimulation(float w, float h,float dt);
     virtual void initSimulation(int w, int h);
 
-    void saveArrayData();
-    void loadArrayData();
+    void saveLightingArrayData();
+    void loadLightingArrayData();
     void saveWavesData();
     void loadWavesData();
+    void saveModelViewData();
+    void loadModelViewData();
 
 public:
     virtual void run(float w, float h);
