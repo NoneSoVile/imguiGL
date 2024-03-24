@@ -64,11 +64,11 @@ void Mesh3d::updateUI(int w, int h) {
         ImGui::SliderFloat3("lookAt vector", (float*)&lookat, -32.0f, 32.0f);
         ImGui::SliderFloat3("eye vector", (float*) &eye, -22.0f, 22.0f);
 
-        ImGui::Text("===============Save Model View settings===================");
+        ImGui::Text("===============Save|Load Model View settings===================");
         if (ImGui::Button("save ModelView settings")) {
             saveModelViewData();
         }
-        ImGui::Text("===============Reload Model View settings===================");
+        ImGui::SameLine();
         if (ImGui::Button("Reload ModelView settings")) {
             loadModelViewData();
         }
@@ -339,6 +339,8 @@ void Mesh3d::initSimulation(int w, int h) {
     lightPositions[4] = vec3f(200, 200, 200);
 
     loadLightingArrayData();
+    loadWavesData();
+    loadModelViewData();
 
 }
 
@@ -346,10 +348,12 @@ void Mesh3d::run(float w, float h)
 {
     glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
     glEnable(GL_DEPTH_TEST);
-    //glDepthMask(GL_FALSE);
-    glDepthFunc(GL_LEQUAL);
+    glDepthMask(true);
+    glDepthFunc(GL_LESS);
     glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
     glColorMask(true, true, true, true);
     
 	stepSimulation(w, h, timestep);
@@ -359,4 +363,5 @@ void Mesh3d::run(float w, float h)
     updateUI(w, h);
 
     glDisable(GL_BLEND);
+    glColorMask(true, true, true, true);
 }
