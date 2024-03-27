@@ -59,7 +59,9 @@ void Mesh3d::updateUI(int w, int h) {
         ImGui::Begin("Helloxxx, world!", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
         ImGui::Text("3D Settings");              
 
-        ImGui::SliderFloat3("modle scale", (float*)&model_scale, .0f, 0.2f);
+        ImGui::SliderFloat("modle scale X", (float*)&model_scale.x, .0f, 20.2f);
+        ImGui::SliderFloat("modle scale Z", (float*)&model_scale.z, .0f, 20.2f);
+        ImGui::SliderFloat(" Y for wave height", (float*)&model_scale.y, .0f, 0.2f);
         ImGui::SliderFloat3("model rotation", (float*)&model_rot, -PI * 2, PI * 2);
         ImGui::SliderFloat3("modle translation", (float*)&model_translation, -30.f, 30.0f);
         ImGui::SliderFloat3("lookAt vector", (float*)&lookat, -32.0f, 32.0f);
