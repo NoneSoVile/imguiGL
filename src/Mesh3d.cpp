@@ -3,6 +3,7 @@
 #include "ModelObj.h"
 #include "ModelGL.h"
 #include "FileConfig.h"
+#include <random>
 
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
@@ -58,11 +59,12 @@ void Mesh3d::updateUI(int w, int h) {
         ImGui::Begin("Helloxxx, world!", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
         ImGui::Text("3D Settings");              
 
-        ImGui::SliderFloat3("modle scale", (float*)&model_scale, .0f, 12.0f);
+        ImGui::SliderFloat3("modle scale", (float*)&model_scale, .0f, 0.2f);
         ImGui::SliderFloat3("model rotation", (float*)&model_rot, -PI * 2, PI * 2);
         ImGui::SliderFloat3("modle translation", (float*)&model_translation, -30.f, 30.0f);
         ImGui::SliderFloat3("lookAt vector", (float*)&lookat, -32.0f, 32.0f);
         ImGui::SliderFloat3("eye vector", (float*) &eye, -22.0f, 22.0f);
+       
 
         ImGui::Text("===============Save|Load Model View settings===================");
         if (ImGui::Button("save ModelView settings")) {
@@ -95,6 +97,10 @@ void Mesh3d::updateUI(int w, int h) {
         if (ImGui::Button("load light settings")) {
             loadLightingArrayData();
         }
+        ImGui::SameLine();
+        if (ImGui::Button("load random light settings")) {
+            loadRandLightingArrayData();
+        }
         for (size_t i = 0; i < lightNum; i++)
         {
             LIGHT_SLIDER_POS_ARRAY(i, lightPositions);
@@ -119,6 +125,9 @@ void Mesh3d::updateUI(int w, int h) {
     if (show_water_settings) {
         ImGui::Begin("water world!", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
         ImGui::Text("water Settings");
+        ImGui::SliderFloat("time step", (float*)&timestep, 0.0001, 0.1);
+        ImGui::SliderInt("waves", (int*)&waveCount, 0, MAX_WAVES);
+        ImGui::SliderFloat("waves power", (float*)&wavePower, 1.0, 10.0);
         ImGui::Text("===============Save | Load settings===================");
         if (ImGui::Button("save waves settings")) {
             saveWavesData();
@@ -126,6 +135,10 @@ void Mesh3d::updateUI(int w, int h) {
         ImGui::SameLine();
         if (ImGui::Button("load waves settings")) {
             loadWavesData();
+        }
+
+        if (ImGui::Button("generate random waves settings")) {
+            loadRandWavesData();
         }
         ImGui::Text("===============Direction settings===================");
 
@@ -142,9 +155,7 @@ void Mesh3d::updateUI(int w, int h) {
             SLIDER_FLOAT3_ARRAY(i, waves_AWP);
         }
       
-        ImGui::SliderFloat("time step", (float*)&timestep, 0.0001, 0.1);
-        ImGui::SliderInt("waves", (int*)&waveCount, 0, MAX_WAVES);
-        ImGui::SliderFloat("waves power", (float*)&wavePower, 1.0, 10.0);
+
 
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
         ImGui::End();
@@ -175,6 +186,7 @@ void Mesh3d::saveLightingArrayData() {
     fileConfig.Save();
 
 }
+
 #define COLOR_KEY(i)  lightColors[i]
 void Mesh3d::loadLightingArrayData() {
     string path = resourceFolder + "arraydata.txt";
@@ -197,6 +209,28 @@ void Mesh3d::loadLightingArrayData() {
     
 }
 
+void Mesh3d::loadRandLightingArrayData(){
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::normal_distribution<float> distributionColor(0.1f, 0.3);
+
+    //position
+    std::normal_distribution<float> distributionX(0.0f, 100.f);
+    std::normal_distribution<float> distributionZ(0.0f, 100.f);
+    std::normal_distribution<float> distributionY(80.0f, 10.f);
+
+    for (int i = 0; i < MAX_LIGHTS; ++i) {
+        lightColors[i].x = abs(distributionColor(gen));
+        lightColors[i].y = abs(distributionColor(gen));
+        lightColors[i].z = abs(distributionColor(gen));
+
+        lightPositions[i].x = distributionX(gen);
+        lightPositions[i].y = distributionY(gen);
+        lightPositions[i].z = distributionZ(gen);
+    }
+    //lightNum = MAX_LIGHTS;
+}
+
 void Mesh3d::loadWavesData() {
     string path = resourceFolder + "waves_data.txt";
     Config fileConfig;
@@ -214,6 +248,26 @@ void Mesh3d::loadWavesData() {
         waves_AWP[i] = fileConfig.Readvec3f(key);
     }
     CONFIG_READ(waveCount);
+}
+
+void Mesh3d::loadRandWavesData(){
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::normal_distribution<float> distribution1(0.2f, .5f);
+    std::normal_distribution<float> distributionA(0.4f, 1);
+    std::normal_distribution<float> distributionW(0.1f, 0.1);
+    std::normal_distribution<float> distributionP(0.0f, .8f);
+
+
+    for (int i = 0; i < MAX_WAVES; ++i) {
+        waves_D[i].x = distribution1(gen);
+        waves_D[i].y = distribution1(gen);
+
+        waves_AWP[i].x = abs(distributionA(gen));
+        waves_AWP[i].y = abs(distributionW(gen));
+        waves_AWP[i].z = abs(distributionP(gen));
+    }
+    //waveCount = MAX_WAVES;
 }
 
 void Mesh3d::saveWavesData() {

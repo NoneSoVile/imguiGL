@@ -27,7 +27,7 @@ protected:
     float alphaColor = 1.0;
 
     //simualation
-#define MAX_WAVES 20
+#define MAX_WAVES 150
     vec2f waves_D[MAX_WAVES];
     vec3f waves_AWP[MAX_WAVES];
     int waveCount = 3;
@@ -45,8 +45,10 @@ protected:
 
     void saveLightingArrayData();
     void loadLightingArrayData();
+    void loadRandLightingArrayData();
     void saveWavesData();
     void loadWavesData();
+    void loadRandWavesData();
     void saveModelViewData();
     void loadModelViewData();
 

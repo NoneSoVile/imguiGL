@@ -45,7 +45,7 @@ void main() {
             position4.y += A * sin(dot(D, posXZ) * W + time * P);
             dpdx += W * D.x* A* cos(dot(D, posXZ) * W + time * P);
             dpdz += W * D.y* A* cos(dot(D, posXZ) * W + time * P);
-    }
+        }
     }else{
         for(int i = 0; i < waveCount; i++){
             vec3 AWP = waves_AWP[i];
