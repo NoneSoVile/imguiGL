@@ -257,7 +257,7 @@ void Mesh3d::loadRandWavesData(){
     std::mt19937 gen(rd());
     std::normal_distribution<float> distribution1(0.2f, .5f);
     std::normal_distribution<float> distributionA(0.4f, 1);
-    std::normal_distribution<float> distributionW(0.1f, 0.1);
+    std::normal_distribution<float> distributionW(0.01f, 0.05);
     std::normal_distribution<float> distributionP(0.0f, .8f);
 
 
@@ -265,11 +265,51 @@ void Mesh3d::loadRandWavesData(){
         waves_D[i].x = distribution1(gen);
         waves_D[i].y = distribution1(gen);
 
-        waves_AWP[i].x = abs(distributionA(gen));
+        waves_AWP[i].x = (distributionA(gen));
         waves_AWP[i].y = abs(distributionW(gen));
         waves_AWP[i].z = abs(distributionP(gen));
     }
     //waveCount = MAX_WAVES;
+}
+
+void Mesh3d::updateRandWavesData(int num)
+{
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::normal_distribution<float> distribution1(0.2f, .5f);
+    std::normal_distribution<float> distributionA(0.4f, 1);
+    std::normal_distribution<float> distributionW(0.01f, 0.05);
+    std::normal_distribution<float> distributionP(0.0f, .8f);
+    if (curPivotWave < 0)
+        curPivotWave = 0;
+    int i = curPivotWave;
+    int count = num;
+    while(count > 0) {
+        new_waves_D[i].x = distribution1(gen);
+        new_waves_D[i].y = distribution1(gen);
+
+        new_waves_AWP[i].x = (distributionA(gen));
+        new_waves_AWP[i].y = abs(distributionW(gen));
+        new_waves_AWP[i].z = abs(distributionP(gen));
+        old_waves_D[i] = waves_D[i];
+        old_waves_AWP[i] = waves_AWP[i];
+        i = (i + 1) % waveCount;
+        --count;
+    }
+    curPivotWave = (curPivotWave + num) % waveCount;
+}
+
+void Mesh3d::transitionWavesValue(int start, int num, float t)
+{
+    int i = start;
+    int count = num;
+    while (count > 0) {
+        waves_D[i] = new_waves_D[i]*t + old_waves_D[i] * (1.0 - t);
+        waves_AWP[i] = new_waves_AWP[i] * t + old_waves_AWP[i] * (1.0 - t);
+        waves_AWP[i].z = new_waves_AWP[i].z;
+        i = (i + 1) % waveCount;
+        --count;
+    }
 }
 
 void Mesh3d::saveWavesData() {
@@ -365,7 +405,19 @@ void Mesh3d::drawSprite(int w, int h, vec2f offset) {
 
 void Mesh3d::stepSimulation(float w, float h, float dt) {
     static float time = 0;
+    static int cycle = 0;
     time += dt;
+    ++cycle;
+    const int num = 1;
+    const int cycleCount = 300;
+    if (cycle % cycleCount == 0) {
+        updateRandWavesData(num);
+    }
+    else if(curPivotWave >= 0){
+        int start = (curPivotWave - num + waveCount) % waveCount;
+        float t = 1.0*(cycle % cycleCount) / cycleCount;
+        transitionWavesValue(start, num, t);
+    }
 
     renderShader->Use(12);
     renderShader->setUniform1f("time", time);

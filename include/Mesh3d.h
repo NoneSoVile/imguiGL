@@ -30,9 +30,16 @@ protected:
 #define MAX_WAVES 150
     vec2f waves_D[MAX_WAVES];
     vec3f waves_AWP[MAX_WAVES];
+
+    vec2f new_waves_D[MAX_WAVES];
+    vec3f new_waves_AWP[MAX_WAVES];
+    vec2f old_waves_D[MAX_WAVES];
+    vec3f old_waves_AWP[MAX_WAVES];
     int waveCount = 3;
     float timestep = 0.01;
     float wavePower = 1.0;
+    int curPivotWave = -1;
+    int transitionCount = 0;
 protected:
     virtual void loadShader();
     virtual void loadMesh();
@@ -49,6 +56,8 @@ protected:
     void saveWavesData();
     void loadWavesData();
     void loadRandWavesData();
+    void updateRandWavesData(int num);
+    void transitionWavesValue(int start, int num, float t);
     void saveModelViewData();
     void loadModelViewData();
 
