@@ -62,7 +62,7 @@ public:
     /// \param[in] positionHandle the vertex attribute array index that represents position in the current shader
     /// \param[in] normalHandle the vertex attribute array index that represents normals in the current shader
     /// \param[in] texcoordHandle the vertex attribute array index that represents UVs in the current shader
-    void drawElements(GLint positionHandle, GLint normalHandle, GLint texcoordHandle, bool usePoints=false);
+    void drawElements(GLint positionHandle, GLint normalHandle, GLint texcoordHandle, bool usePoints = false, bool useLines = false);
 
     /// Draw the model using the current shader (positions, UVs, normals and tangents)
     /// Binds the vertex position, UV, normal and tangent arrays to the given attribute array indices and draws the

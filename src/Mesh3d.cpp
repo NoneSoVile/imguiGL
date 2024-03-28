@@ -59,6 +59,8 @@ void Mesh3d::updateUI(int w, int h) {
         ImGui::Begin("Helloxxx, world!", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
         ImGui::Text("3D Settings");              
 
+        ImGui::Checkbox("UsePoints", &usePoints);
+        ImGui::SameLine(); ImGui::Checkbox("UseLines", &useLines);
         ImGui::SliderFloat("modle scale X", (float*)&model_scale.x, .0f, 20.2f);
         ImGui::SliderFloat("modle scale Z", (float*)&model_scale.z, .0f, 20.2f);
         ImGui::SliderFloat(" Y for wave height", (float*)&model_scale.y, .0f, 0.2f);
@@ -401,7 +403,7 @@ void Mesh3d::drawSprite(int w, int h, vec2f offset) {
     renderShader->setUniform1f("alphaColor", alphaColor);
 
     glBindTexture(GL_TEXTURE_2D, ourTexture);
-    waterModelGl->drawElements(0, 2, 1);
+    waterModelGl->drawElements(0, 2, 1, usePoints, useLines);
 }
 
 void Mesh3d::stepSimulation(float w, float h, float dt) {
@@ -462,11 +464,11 @@ void Mesh3d::run(float w, float h)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
     glEnable(GL_DEPTH_TEST);
-    glDepthMask(true);
-    glDepthFunc(GL_LESS);
+    glDepthMask(false);
+    glDepthFunc(GL_LEQUAL);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
-    glColorMask(true, true, true, true);
+    glColorMask(true, true, true, false);
     
 	stepSimulation(w, h, timestep);
     glViewport(0, 0, w, h);

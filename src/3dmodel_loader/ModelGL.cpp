@@ -232,7 +232,7 @@ void ModelGL::drawElements(GLint positionHandle, GLint normalHandle)
     unbindBuffers();
 }
 
-void ModelGL::drawElements(GLint positionHandle, GLint normalHandle, GLint texcoordHandle, bool usePoints)
+void ModelGL::drawElements(GLint positionHandle, GLint normalHandle, GLint texcoordHandle, bool usePoints, bool useLines)
 {
     bindBuffers();
     glBindBuffer(GL_ARRAY_BUFFER, model_vboID);
@@ -256,7 +256,16 @@ void ModelGL::drawElements(GLint positionHandle, GLint normalHandle, GLint texco
        
     }
     //checkGlError("glVertexAttribPointer");
-	glDrawElements(usePoints ?GL_POINTS : GL_TRIANGLES, mIndexCount, GL_UNSIGNED_INT, 0);
+    
+    if (useLines) {
+        glDrawElements(GL_LINES, mIndexCount, GL_UNSIGNED_INT, 0);
+    }
+    else if (usePoints) {
+        glDrawElements(GL_POINTS, mIndexCount, GL_UNSIGNED_INT, 0);
+    }
+    else {
+        glDrawElements(GL_TRIANGLES, mIndexCount, GL_UNSIGNED_INT, 0);
+    }
 
     //checkGlError("glDrawElements");
     if (positionHandle >= 0)

@@ -9,6 +9,8 @@ protected:
 	std::shared_ptr<ModelGL> waterModelGl;
 
     //gui data
+    bool usePoints = false;
+    bool useLines = false;
     bool show_lighting_settings = 0;
     bool show_water_settings = 0;
     bool useTexture = 0;
