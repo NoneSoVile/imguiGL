@@ -40,6 +40,7 @@ protected:
     float wavePower = 1.0;
     int curPivotWave = -1;
     int transitionCount = 0;
+    bool transitionWave = 0;
 protected:
     virtual void loadShader();
     virtual void loadMesh();

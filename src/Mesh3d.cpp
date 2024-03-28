@@ -142,6 +142,7 @@ void Mesh3d::updateUI(int w, int h) {
         if (ImGui::Button("generate random waves settings")) {
             loadRandWavesData();
         }
+        ImGui::Checkbox("use Transition waves", &transitionWave);
         ImGui::Text("===============Direction settings===================");
 
         for (size_t i = 0; i < waveCount; i++)
@@ -410,14 +411,17 @@ void Mesh3d::stepSimulation(float w, float h, float dt) {
     ++cycle;
     const int num = 1;
     const int cycleCount = 300;
-    if (cycle % cycleCount == 0) {
-        updateRandWavesData(num);
+    if (transitionWave) {
+        if (cycle % cycleCount == 0) {
+            updateRandWavesData(num);
+        }
+        else if (curPivotWave >= 0) {
+            int start = (curPivotWave - num + waveCount) % waveCount;
+            float t = 1.0 * (cycle % cycleCount) / cycleCount;
+            transitionWavesValue(start, num, t);
+        }
     }
-    else if(curPivotWave >= 0){
-        int start = (curPivotWave - num + waveCount) % waveCount;
-        float t = 1.0*(cycle % cycleCount) / cycleCount;
-        transitionWavesValue(start, num, t);
-    }
+
 
     renderShader->Use(12);
     renderShader->setUniform1f("time", time);
