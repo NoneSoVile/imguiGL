@@ -9,12 +9,12 @@ out highp vec4 vPositionMV;
 out highp vec3 vNormal;
 out highp vec3 vNormalMV;
 
-uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
-uniform mediump mat4 uProjection;
-uniform mediump mat4 u_inv_MV;
-uniform mediump float u_time;
+uniform highp mat4 model;
+uniform highp mat4 view;
+uniform highp mat4 projection;
+uniform highp mat4 uProjection;
+uniform highp mat4 u_inv_MV;
+uniform highp float u_time;
 
 #define MAX_WAVES 20
 uniform int waveCount;
