@@ -85,13 +85,13 @@ void WaterShader::drawSprite(int w, int h, vec2f offset) {
     renderShader->setUniformMatrix4fv("model", model._array, 1, GL_FALSE);
     renderShader->setUniformMatrix4fv("view", view._array, 1, GL_FALSE);
     renderShader->setUniformMatrix4fv("projection", projection._array, 1, GL_FALSE);
-    renderShader->setUniform1f("specularPower", specularPower);
+    /*renderShader->setUniform1f("specularPower", specularPower);
     renderShader->setUniform1f("diffusePower", diffusePower);
     renderShader->setUniform1i("useTexture", useTexture);
     renderShader->setUniform1i("lightNum", lightNum);
     renderShader->setUniform3fv("lights", (const float*)lightPositions, lightNum);
     renderShader->setUniform3fv("lights_Color", (const float*)lightColors, lightNum);
-    renderShader->setUniform1f("alphaColor", alphaColor);
+    renderShader->setUniform1f("alphaColor", alphaColor);*/
 
     glBindTexture(GL_TEXTURE_2D, ourTexture);
     waterModelGl->drawElements(0, 2, 1, usePoints, useLines);
