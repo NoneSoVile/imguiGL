@@ -282,9 +282,10 @@ void main() {
         finalColor = vec4(lights_Color[0], 1.0);
      }
      
-     finalColor.xyz = finalColor.xyz*(intense + intenseOfMainLight);
+    finalColor.xyz = finalColor.xyz*(intense + intenseOfMainLight);
 
+    vec4 firstColor = finalColor * vec4(vec3(1.0, 1.0, 1.0), alphaColor);
     vec4 outColor;
      mainImage(outColor, vTexCoord);
-     color = outColor;//finalColor * vec4(vec3(1.0, 1.0, 1.0), alphaColor);
+     color = outColor;
  }

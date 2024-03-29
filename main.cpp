@@ -6,6 +6,7 @@
 #include "PhysicsCurve.h"
 #include "Sprite2d.h"
 #include "Mesh3d.h"
+#include "WaterShader.h"
 #include "MatTester.h"
 #include <GLFW/glfw3.h>
 #include "imgui.h"
@@ -138,6 +139,7 @@ int main(int, char**)
 	GaussianFilterShaderTester gaussianFilterTester;
 	PhysicsCurve curve;
 	Mesh3d sprite;
+	//WaterShader sprite;
 	//shaderTester.init();
 	//geoShaderTester.init();
 	//gaussianFilterTester.init();

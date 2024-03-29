@@ -56,13 +56,13 @@ protected:
     void saveLightingArrayData();
     void loadLightingArrayData();
     void loadRandLightingArrayData();
-    void saveWavesData();
-    void loadWavesData();
+    virtual void saveWavesData();
+    virtual void loadWavesData();
     void loadRandWavesData();
     void updateRandWavesData(int num);
     void transitionWavesValue(int start, int num, float t);
-    void saveModelViewData();
-    void loadModelViewData();
+    virtual void saveModelViewData();
+    virtual void loadModelViewData();
 
 public:
     virtual void run(float w, float h);
