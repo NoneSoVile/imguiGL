@@ -49,6 +49,10 @@ protected:
     virtual void loadTexture();
 
     virtual void updateUI(int w, int h);
+    virtual void updateModelViewUI(int w, int h);
+    virtual void updateLightsUI(int w, int h);
+    virtual void updateWavesUI(int w, int h);
+
     virtual void drawSprite(int w, int h, vec2f offset);
     virtual void stepSimulation(float w, float h,float dt);
     virtual void initSimulation(int w, int h);

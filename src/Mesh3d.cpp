@@ -46,124 +46,145 @@ void Mesh3d::loadTexture() {
     Sprite2d::loadTexture();
 }
 
+void Mesh3d::updateModelViewUI(int w, int h){
+    ImGuiIO &io = ImGui::GetIO();
+    (void)io;
+    static float f = 0.0f;
+    static int counter = 0;
+
+    ImGui::Begin("Helloxxx, world!", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
+    ImGui::Text("3D Settings");
+
+    ImGui::Checkbox("UsePoints", &usePoints);
+    ImGui::SameLine();
+    ImGui::Checkbox("UseLines", &useLines);
+    ImGui::SliderFloat("modle scale X", (float *)&model_scale.x, .0f, 20.2f);
+    ImGui::SliderFloat("modle scale Z", (float *)&model_scale.z, .0f, 20.2f);
+    ImGui::SliderFloat(" Y for wave height", (float *)&model_scale.y, .0f, 0.2f);
+    ImGui::SliderFloat3("model rotation", (float *)&model_rot, -PI * 2, PI * 2);
+    ImGui::SliderFloat3("modle translation", (float *)&model_translation, -30.f, 30.0f);
+    ImGui::SliderFloat3("lookAt vector", (float *)&lookat, -32.0f, 32.0f);
+    ImGui::SliderFloat3("eye vector", (float *)&eye, -22.0f, 22.0f);
+
+    ImGui::Text("===============Save|Load Model View settings===================");
+    if (ImGui::Button("save ModelView settings"))
+    {
+        saveModelViewData();
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Reload ModelView settings"))
+    {
+        loadModelViewData();
+    }
+
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+
+    ImGui::Checkbox("show light settings", &show_lighting_settings);
+    ImGui::Checkbox("show waves settings", &show_water_settings);
+    ImGui::End();
+}
+
+void Mesh3d::updateLightsUI(int w, int h)
+{
+#define LIGHT_SLIDER_POS_ARRAY(i, name) ImGui::SliderFloat3((string("light") + std::to_string(i) + " Position").c_str(), (float*)&name[i], -200, 200);
+#define LIGHT_SLIDER_COLOR_ARRAY(i, name) ImGui::SliderFloat3((string("light") + std::to_string(i) + " Color").c_str(), (float*)&name[i], 0, 1);
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    ImGui::Begin("Lighting, world!", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
+    ImGui::Text("3D light Settings");
+
+    ImGui::Checkbox("useTexture", &useTexture);
+    ImGui::Text("===============Save | Load light settings===================");
+    if (ImGui::Button("save light settings"))
+    {
+        saveLightingArrayData();
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("load light settings"))
+    {
+        loadLightingArrayData();
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("load random light settings"))
+    {
+        loadRandLightingArrayData();
+    }
+    for (size_t i = 0; i < lightNum; i++)
+    {
+        LIGHT_SLIDER_POS_ARRAY(i, lightPositions);
+    }
+    for (size_t i = 0; i < lightNum; i++)
+    {
+        LIGHT_SLIDER_COLOR_ARRAY(i, lightColors);
+    }
+
+    ImGui::SliderFloat("alphaColor", (float *)&alphaColor, .0f, 1.0f);
+    ImGui::SliderFloat("diffusePower", (float *)&model_diffusePower, .0f, 12.0f);
+    ImGui::SliderFloat("specularPower", (float *)&model_specularPower, .0f, 1300.0f);
+
+    ImGui::SliderInt("lights", (int *)&lightNum, 0, MAX_LIGHTS);
+
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+    ImGui::End();
+}
+
+void Mesh3d::updateWavesUI(int w, int h)
+{
+#define SLIDER_FLOAT2_ARRAY(i, name) ImGui::SliderFloat2((string("waves") + std::to_string(i) + " Direction").c_str(), (float *)&name[i], -1, 1);
+#define SLIDER_FLOAT3_ARRAY(i, name) ImGui::SliderFloat3((string("waves") + std::to_string(i) + " AWP").c_str(), (float *)&name[i], -1, 1);
+    ImGuiIO &io = ImGui::GetIO();
+    (void)io;
+    ImGui::Begin("water world!", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
+    ImGui::Text("water Settings");
+    ImGui::SliderFloat("time step", (float *)&timestep, 0.0001, 0.1);
+    ImGui::SliderInt("waves", (int *)&waveCount, 0, MAX_WAVES);
+    ImGui::SliderFloat("waves power", (float *)&wavePower, 1.0, 10.0);
+    ImGui::Text("===============Save | Load settings===================");
+    if (ImGui::Button("save waves settings"))
+    {
+        saveWavesData();
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("load waves settings"))
+    {
+        loadWavesData();
+    }
+
+    if (ImGui::Button("generate random waves settings"))
+    {
+        loadRandWavesData();
+    }
+    ImGui::Checkbox("use Transition waves", &transitionWave);
+    ImGui::Text("===============Direction settings===================");
+
+    for (size_t i = 0; i < waveCount; i++)
+    {
+        SLIDER_FLOAT2_ARRAY(i, waves_D);
+    }
+
+    ImGui::Text("===============AWP settings===================");
+
+    for (size_t i = 0; i < waveCount; i++)
+    {
+        SLIDER_FLOAT3_ARRAY(i, waves_AWP);
+    }
+
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+    ImGui::End();
+}
+
 void Mesh3d::updateUI(int w, int h) {
 // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
     ImGuiIO& io = ImGui::GetIO(); (void)io;
 
     ImGui::SetNextWindowBgAlpha(0.5f);
-    
-    {
-        static float f = 0.0f;
-        static int counter = 0;
-
-        ImGui::Begin("Helloxxx, world!", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
-        ImGui::Text("3D Settings");              
-
-        ImGui::Checkbox("UsePoints", &usePoints);
-        ImGui::SameLine(); ImGui::Checkbox("UseLines", &useLines);
-        ImGui::SliderFloat("modle scale X", (float*)&model_scale.x, .0f, 20.2f);
-        ImGui::SliderFloat("modle scale Z", (float*)&model_scale.z, .0f, 20.2f);
-        ImGui::SliderFloat(" Y for wave height", (float*)&model_scale.y, .0f, 0.2f);
-        ImGui::SliderFloat3("model rotation", (float*)&model_rot, -PI * 2, PI * 2);
-        ImGui::SliderFloat3("modle translation", (float*)&model_translation, -30.f, 30.0f);
-        ImGui::SliderFloat3("lookAt vector", (float*)&lookat, -32.0f, 32.0f);
-        ImGui::SliderFloat3("eye vector", (float*) &eye, -22.0f, 22.0f);
-       
-
-        ImGui::Text("===============Save|Load Model View settings===================");
-        if (ImGui::Button("save ModelView settings")) {
-            saveModelViewData();
-        }
-        ImGui::SameLine();
-        if (ImGui::Button("Reload ModelView settings")) {
-            loadModelViewData();
-        }
-
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-        
-        ImGui::Checkbox("show light settings", &show_lighting_settings);
-        ImGui::Checkbox("show waves settings", &show_water_settings);
-        ImGui::End();
-    }
-#define LIGHT_SLIDER_POS_ARRAY(i, name) ImGui::SliderFloat3((string("light") + std::to_string(i) + " Position").c_str(), (float*)&name[i], -200, 200);
-#define LIGHT_SLIDER_COLOR_ARRAY(i, name) ImGui::SliderFloat3((string("light") + std::to_string(i) + " Color").c_str(), (float*)&name[i], 0, 1);
+    updateModelViewUI(w, h);
+   
 
     if (show_lighting_settings) {
-        ImGui::Begin("Lighting, world!", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
-        ImGui::Text("3D light Settings");
-
-        ImGui::Checkbox("useTexture", &useTexture);
-        ImGui::Text("===============Save | Load light settings===================");
-        if (ImGui::Button("save light settings")) {
-            saveLightingArrayData();
-        }
-        ImGui::SameLine();
-        if (ImGui::Button("load light settings")) {
-            loadLightingArrayData();
-        }
-        ImGui::SameLine();
-        if (ImGui::Button("load random light settings")) {
-            loadRandLightingArrayData();
-        }
-        for (size_t i = 0; i < lightNum; i++)
-        {
-            LIGHT_SLIDER_POS_ARRAY(i, lightPositions);
-        }
-        for (size_t i = 0; i < lightNum; i++)
-        {
-            LIGHT_SLIDER_COLOR_ARRAY(i, lightColors);
-        }
-        
-
-        ImGui::SliderFloat("alphaColor", (float*)&alphaColor, .0f, 1.0f);
-        ImGui::SliderFloat("diffusePower", (float*)&model_diffusePower, .0f, 12.0f);
-        ImGui::SliderFloat("specularPower", (float*)&model_specularPower, .0f, 1300.0f);
-
-        ImGui::SliderInt("lights", (int*)&lightNum, 0, MAX_LIGHTS);
-
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-        ImGui::End();
+        updateLightsUI(w, h);
     }
-    #define SLIDER_FLOAT2_ARRAY(i, name) ImGui::SliderFloat2((string("waves") + std::to_string(i) + " Direction").c_str(), (float*)&name[i], -1, 1);
-    #define SLIDER_FLOAT3_ARRAY(i, name) ImGui::SliderFloat3((string("waves") + std::to_string(i) + " AWP").c_str(), (float*)&name[i], -1, 1);
     if (show_water_settings) {
-        ImGui::Begin("water world!", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
-        ImGui::Text("water Settings");
-        ImGui::SliderFloat("time step", (float*)&timestep, 0.0001, 0.1);
-        ImGui::SliderInt("waves", (int*)&waveCount, 0, MAX_WAVES);
-        ImGui::SliderFloat("waves power", (float*)&wavePower, 1.0, 10.0);
-        ImGui::Text("===============Save | Load settings===================");
-        if (ImGui::Button("save waves settings")) {
-            saveWavesData();
-        }
-        ImGui::SameLine();
-        if (ImGui::Button("load waves settings")) {
-            loadWavesData();
-        }
-
-        if (ImGui::Button("generate random waves settings")) {
-            loadRandWavesData();
-        }
-        ImGui::Checkbox("use Transition waves", &transitionWave);
-        ImGui::Text("===============Direction settings===================");
-
-        for (size_t i = 0; i < waveCount; i++)
-        {
-            SLIDER_FLOAT2_ARRAY(i, waves_D);
-        }
-        
-
-        ImGui::Text("===============AWP settings===================");
-
-        for (size_t i = 0; i < waveCount; i++)
-        {
-            SLIDER_FLOAT3_ARRAY(i, waves_AWP);
-        }
-      
-
-
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-        ImGui::End();
+        updateWavesUI(w, h);
     }
 }
 #define CONFIG_ADD(var) fileConfig.Add((#var), var)

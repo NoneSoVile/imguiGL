@@ -138,8 +138,8 @@ int main(int, char**)
 	GeometryShaderTester geoShaderTester;
 	GaussianFilterShaderTester gaussianFilterTester;
 	PhysicsCurve curve;
-	Mesh3d sprite;
-	//WaterShader sprite;
+	//Mesh3d sprite;
+	WaterShader sprite;
 	//shaderTester.init();
 	//geoShaderTester.init();
 	//gaussianFilterTester.init();

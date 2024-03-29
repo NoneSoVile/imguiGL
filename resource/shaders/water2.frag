@@ -33,28 +33,28 @@ vec3 brightnessContrast(vec3 value, float brightness, float contrast)
 
 ////////
 /////
-
-
+uniform int NUM_STEPS ;
+uniform int ITER_GEOMETRY ;
+uniform int ITER_FRAGMENT ;
+uniform float SEA_HEIGHT ;
+uniform float SEA_CHOPPY ;
+uniform float SEA_SPEED ;
+uniform float SEA_FREQ ;
+uniform vec3 SEA_BASE;
+uniform vec3 SEA_WATER_COLOR;
 /*
  * "Seascape" by Alexander Alekseev aka TDM - 2014
  * License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
  * Contact: tdmaav@gmail.com
  */
 
-const int NUM_STEPS = 8;
+
 const float EPSILON	= 1e-3;
 #define EPSILON_NRM (0.1 / 2000.0)
 //#define AA
 
 // sea
-const int ITER_GEOMETRY = 3;
-const int ITER_FRAGMENT = 5;
-const float SEA_HEIGHT = 1.5;
-const float SEA_CHOPPY = 14.0;
-const float SEA_SPEED = 1.8;
-const float SEA_FREQ = 0.056;
-const vec3 SEA_BASE = vec3(0.0,0.09,0.18);
-const vec3 SEA_WATER_COLOR = vec3(0.8,0.9,0.6)*0.6;
+
 #define SEA_TIME (1.0 + time * SEA_SPEED)
 const mat2 octave_m = mat2(1.6,1.2,-1.2,1.6);
 
