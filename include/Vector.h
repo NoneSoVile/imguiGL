@@ -838,6 +838,191 @@ inline vec4<T> normalize( const vec4<T> & vec) {
     return r;
 }
 
+//   math
+namespace math
+{
+    template <class T>
+    inline T floor(const T &vec)
+    {
+        T r;
+        T num = vec;
+        int floorValue = static_cast<int>(num);
+        if (num < 0 && num != floorValue)
+        {
+            floorValue--;
+        }
+        r = floorValue;
+
+        return r;
+    }
+
+    template <class T>
+    inline vec2<T> floor(const vec2<T> &vec)
+    {
+        vec2<T> r;
+        for (int32_t i = 0; i < vec.size(); i++)
+        {
+            T num = vec._array[i];
+            int floorValue = static_cast<int>(num);
+            if (num < 0 && num != floorValue)
+            {
+                floorValue--;
+            }
+            r._array[i] = floorValue;
+        }
+        return r;
+    }
+
+    template <class T>
+    inline vec3<T> floor(const vec3<T> &vec)
+    {
+        vec3<T> r;
+        for (int32_t i = 0; i < vec.size(); i++)
+        {
+            T num = vec._array[i];
+            int floorValue = static_cast<int>(num);
+            if (num < 0 && num != floorValue)
+            {
+                floorValue--;
+            }
+            r._array[i] = floorValue;
+        }
+        return r;
+    }
+
+    template <class T>
+    inline vec4<T> floor(const vec4<T> &vec)
+    {
+        vec4<T> r;
+        for (int32_t i = 0; i < vec.size(); i++)
+        {
+            T num = vec._array[i];
+            int floorValue = static_cast<int>(num);
+            if (num < 0 && num != floorValue)
+            {
+                floorValue--;
+            }
+            r._array[i] = floorValue;
+        }
+        return r;
+    }
+    template <class T>
+    T fract(T num)
+    {
+        return num - static_cast<int>(num);
+    }
+
+    template <class T>
+    inline vec2<T> fract(const vec2<T> &vec)
+    {
+        vec2<T> r;
+        for (int32_t i = 0; i < vec.size(); i++)
+        {
+            T num = vec._array[i];
+            T floorValue = static_cast<T>(static_cast<int>(num));
+            r._array[i] = num - floorValue;
+        }
+        return r;
+    }
+
+    template <class T>
+    inline vec3<T> fract(const vec3<T> &vec)
+    {
+        vec3<T> r;
+        for (int32_t i = 0; i < vec.size(); i++)
+        {
+            T num = vec._array[i];
+            T floorValue = static_cast<T>(static_cast<int>(num));
+            r._array[i] = num - floorValue;
+        }
+        return r;
+    }
+
+    template <class T>
+    inline vec4<T> fract(const vec4<T> &vec)
+    {
+        vec4<T> r;
+        for (int32_t i = 0; i < vec.size(); i++)
+        {
+            T num = vec._array[i];
+            T floorValue = static_cast<T>(static_cast<int>(num));
+            r._array[i] = num - floorValue;
+        }
+        return r;
+    }
+
+    template <class T>
+    inline T mix(const T &x, const T &y, T a)
+    {
+        return x * (1 - a) + y * a;
+    }
+
+    template <class T>
+    inline vec2<T> mix(const vec2<T> &x, const vec2<T> &y, T a)
+    {
+        return x * (1 - a) + y * a;
+    }
+
+    template <class T>
+    inline vec3<T> mix(const vec3<T> &x, const vec3<T> &y, T a)
+    {
+        return x * (1 - a) + y * a;
+    }
+
+    template <class T>
+    inline vec4<T> mix(const vec4<T> &x, const vec4<T> &y, T a)
+    {
+        return x * (1 - a) + y * a;
+    }
+
+    template <class T>
+    inline vec2<T> sin(const vec2<T> &v)
+    {
+        return vec2<T>(std::sin(v.x), std::sin(v.y));
+    }
+
+    template <class T>
+    inline vec3<T> sin(const vec3<T> &v)
+    {
+        return vec3<T>(std::sin(v.x), std::sin(v.y), std::sin(v.z));
+    }
+
+    template <class T>
+    inline vec2<T> cos(const vec2<T> &v)
+    {
+        return vec2<T>(std::cos(v.x), std::cos(v.y));
+    }
+
+    template <class T>
+    inline vec3<T> cos(const vec3<T> &v)
+    {
+        return vec3<T>(std::cos(v.x), std::cos(v.y), std::cos(v.z));
+    }
+
+    template <class T>
+    inline vec2<T> abs(const vec2<T> &v)
+    {
+        return vec2<T>(std::abs(v.x), std::abs(v.y));
+    }
+
+    template <class T>
+    inline vec3<T> abs(const vec3<T> &v)
+    {
+        return vec3<T>(std::abs(v.x), std::abs(v.y), std::abs(v.z));
+    }
+
+    template <class T>
+    inline vec2<T> pow(const vec2<T> &v, T exponent)
+    {
+        return vec2<T>(std::pow(v.x, exponent), std::pow(v.y, exponent));
+    }
+
+    template <class T>
+    inline vec3<T> pow(const vec3<T> &v, T exponent)
+    {
+        return vec3<T>(std::pow(v.x, exponent), std::pow(v.y, exponent), std::pow(v.z, exponent));
+    }
+}
 // In VC8 : min and max are already defined by a #define...
 #ifdef min
 #undef min

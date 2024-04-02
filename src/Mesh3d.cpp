@@ -9,6 +9,40 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #endif
 #include "imgui.h"
+using MB::math::mix;
+using MB::math::floor;
+using MB::math::fract;
+using MB::math::abs;
+using MB::math::sin;
+using MB::math::cos;
+
+/*double fract(double num) {
+    return num - static_cast<int>(num);
+}*/
+
+float hash( vec2f p ) {
+	float h = MB::dot(p,vec2f(127.1,311.7));	
+    return fract(sin(h)*43758.5453123f);
+}
+
+float noise(vec2f p ) {
+    vec2f i = floor( p );
+    vec2f f = fract( p );	
+	vec2f u = f*f*(3.0-2.0*f);
+    return -1.0+2.0*mix( mix( hash( i + vec2f(0.0,0.0) ), 
+                     hash( i + vec2f(1.0,0.0) ), u.x),
+                mix( hash( i + vec2f(0.0,1.0) ), 
+                     hash( i + vec2f(1.0,1.0) ), u.x), u.y);
+}
+
+float sea_octave(vec2f uv, float choppy) {
+    uv += noise(uv);  
+    vec2f wv = 1.0-abs(sin(uv));
+    vec2f swv = abs(cos(uv));    
+    wv = mix(wv,swv,wv);
+    return pow(1.0-pow(wv.x * wv.y,0.65),choppy);
+}
+
 
 void Mesh3d::loadShader() {
     /*create shaders
