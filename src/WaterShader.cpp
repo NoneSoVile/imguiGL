@@ -120,6 +120,7 @@ void WaterShader::stepSimulation(float w, float h, float dt) {
     SET_UNIFORM_1F(SEA_FREQ, SEA_FREQ);
     SET_UNIFORM_3FV(SEA_BASE, SEA_BASE, 1);
     SET_UNIFORM_3FV(SEA_WATER_COLOR, &SEA_WATER_COLOR, 1);
+    SET_UNIFORM_1I(noiseFunc, noiseFunc);
 
 }
 
@@ -211,6 +212,7 @@ void WaterShader::updateWavesUI(int w, int h){
 
     ImGui::SliderFloat3("SEA_BASE", (float *)&SEA_BASE, 0.0, 1.0);
     ImGui::SliderFloat3("SEA_WATER_COLOR", (float *)&SEA_WATER_COLOR, 0.0, 19.0);
+    ImGui::SliderInt("noise Func", (int *)&noiseFunc, 0, 10);
     ImGui::Text("===============Save | Load settings===================");
     if (ImGui::Button("save waves settings"))
     {

@@ -13,11 +13,8 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
-uniform mediump float specularPower;
-uniform mediump float diffusePower;
-uniform mediump int lightNum;
-uniform mediump vec3 lights[MAX_LIGHTS];
-uniform mediump vec3 lights_Color[MAX_LIGHTS];
+
+uniform int noiseFunc;
 
 uniform sampler2D ourTexture;
 uniform int useTexture;
@@ -83,6 +80,22 @@ float noise( in vec2 p ) {
                      hash( i + vec2(1.0,1.0) ), u.x), u.y);
 }
 
+
+float random(vec2 st){
+    return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
+}
+
+float noise2(vec2 st) {
+    vec2 i = floor(st);
+    vec2 f = fract(st);
+
+    // Smooth the fragment position
+    vec2 u = f*f*(3.0-2.0*f);
+
+    return mix(mix(random(i), random(i + vec2(1.0, 0.0)), u.x),
+               mix(random(i + vec2(0.0, 1.0)), random(i + vec2(1.0, 1.0)), u.x), u.y);
+}
+
 // lighting
 float diffuse(vec3 n,vec3 l,float p) {
     return pow(dot(n,l) * 0.4 + 0.6,p);
@@ -100,7 +113,10 @@ vec3 getSkyColor(vec3 e) {
 
 // sea
 float sea_octave(vec2 uv, float choppy) {
-    uv += noise(uv);        
+    if(noiseFunc == 0)
+        uv += noise(uv);
+    else
+       uv += noise2(uv);    
     vec2 wv = 1.0-abs(sin(uv));
     vec2 swv = abs(cos(uv));    
     wv = mix(wv,swv,wv);
@@ -236,55 +252,15 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
 #endif
     
     // post
-	fragColor = vec4(pow(color,vec3(0.85)), 1.0);
+	fragColor = vec4(pow(color,vec3(0.8)), 1.0);
+    fragColor.rgb = smoothstep(0.2, 1.5, fragColor.rgb);
 }
 ////////////////////
 
 
 
 void main() {
-    vec3 intense = vec3(1.0, 1.0, 1.0);
-    vec3 pv = vec3(0.0, 0.0, 0.0);
-    float m = specularPower;
-
-    vec3 l[5];
-    vec3 EL[5];
-    vec3 Kd = diffusePower/float(lightNum)*lights_Color[0]/PI;
-    vec3 Ks = 6.0/float(lightNum)*lights_Color[0]*(m + 8.0)/(8.0*PI);
-    vec4 p = vPositionMV;
-
-    float intensity = 1.0;
-    vec3 n = vNormalMV;
-
-    vec3 v = normalize(pv - p.xyz);
-    intense = vec3(0.0, 0.0, 0.0);
-    vec3 intenseOfMainLight = vec3(0.0, 0.0, 0.0);
-
-    for(int k = 0; k < lightNum; k++){
-        float theta = float(k)* 2.0*PI/ float(lightNum);
-        l[k] = (vec4(lights[k], 1.0)).xyz;
-        l[k] = (view*vec4(l[k], 1.0)).xyz;
-        float distance = length(l[k] - p.xyz);
-        l[k] = normalize(l[k] - p.xyz);
-        EL[k] = vec3(1.0);
-        vec3 h = normalize(v + l[k]);
-        float cosTh = max(dot(n, h), 0.0);
-        float cosTi = max(dot(n, l[k]), 0.0);
-        float coslh = max(dot(h, l[k]), 0.0);
-        if(k == 0)
-            intenseOfMainLight = (Kd + Ks*pow(cosTh, m)) * EL[k]*cosTi*(lights_Color[k])/ ( 1.0);
-        else
-            intense += (Kd + Ks*pow(cosTh, m)) * EL[k]*cosTi*(lights_Color[k])/ ( 1.0);
-    }
-
-     vec4 finalColor = texture(ourTexture, vTexCoord);
-     if(useTexture == 0){
-        finalColor = vec4(lights_Color[0], 1.0);
-     }
-     
-    finalColor.xyz = finalColor.xyz*(intense + intenseOfMainLight);
-
-    vec4 firstColor = finalColor * vec4(vec3(1.0, 1.0, 1.0), alphaColor);
+    
     vec4 outColor;
      mainImage(outColor, vTexCoord);
      color = outColor;

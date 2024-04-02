@@ -32,4 +32,5 @@ protected:
      float SEA_FREQ = 0.056;
      vec3f SEA_BASE = vec3f(0.0, 0.09, 0.18);
      vec3f SEA_WATER_COLOR = vec3f(0.8, 0.9, 0.6) * 0.6;
+     int noiseFunc = 0;
 };
