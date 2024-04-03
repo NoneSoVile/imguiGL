@@ -44,6 +44,8 @@ float sea_octave(vec2f uv, float choppy) {
 }
 
 
+
+
 void Mesh3d::loadShader() {
     /*create shaders
     */
@@ -188,6 +190,7 @@ void Mesh3d::updateWavesUI(int w, int h)
         loadRandWavesData();
     }
     ImGui::Checkbox("use Transition waves", &transitionWave);
+    ImGui::Checkbox("perturbation waves", &wavePerturbation);
     ImGui::Text("===============Direction settings===================");
 
     for (size_t i = 0; i < waveCount; i++)
@@ -315,7 +318,7 @@ void Mesh3d::loadRandWavesData(){
     std::mt19937 gen(rd());
     std::normal_distribution<float> distribution1(0.2f, .5f);
     std::normal_distribution<float> distributionA(0.4f, 1);
-    std::normal_distribution<float> distributionW(0.01f, 0.05);
+    std::normal_distribution<float> distributionW(0.01f, 0.2);
     std::normal_distribution<float> distributionP(0.0f, .8f);
 
 
@@ -484,6 +487,7 @@ void Mesh3d::stepSimulation(float w, float h, float dt) {
     renderShader->setUniform1f("time", time);
     renderShader->setUniform1f("waves_Power", wavePower);
     renderShader->setUniform1i("waveCount", waveCount);
+    renderShader->setUniform1i("wavePerturbation", wavePerturbation);
     renderShader->setUniform2fv("waves_D", (const float*)waves_D, waveCount);
     renderShader->setUniform3fv("waves_AWP", (const float*)waves_AWP, waveCount);
 }

@@ -18,11 +18,35 @@ uniform highp float u_time;
 
 #define MAX_WAVES 20
 uniform int waveCount;
+uniform int wavePerturbation;
 uniform vec2 waves_D[MAX_WAVES];
 uniform vec3 waves_AWP[MAX_WAVES];
 uniform float time;
 uniform float waves_Power;
 const float PI = 3.1415926;
+
+
+float hash( vec2 p ) {
+	float h = dot(p,vec2(127.1,311.7));	
+    return fract(sin(h)*43758.5453123);
+}
+float noise( in vec2 p ) {
+    vec2 i = floor( p );
+    vec2 f = fract( p );	
+	vec2 u = f*f*(3.0-2.0*f);
+    return -1.0+2.0*mix( mix( hash( i + vec2(0.0,0.0) ), 
+                     hash( i + vec2(1.0,0.0) ), u.x),
+                mix( hash( i + vec2(0.0,1.0) ), 
+                     hash( i + vec2(1.0,1.0) ), u.x), u.y);
+}
+
+float sea_octave(vec2 uv, float choppy) {
+    uv += noise(uv);   
+    vec2 wv = 1.0-abs(sin(uv));
+    vec2 swv = abs(cos(uv));    
+    wv = mix(wv,swv,wv);
+    return pow(1.0-pow(wv.x * wv.y,0.65),choppy);
+}
 
 void main() {
     mat4 MVP = projection*view*model;
@@ -59,6 +83,30 @@ void main() {
             dpdz += waves_Power * W * D.y* A* cos(dot(D, posXZ) * W + time * P) * pow(0.5*(sin(dot(D, posXZ) * W + time * P) + 1.0), waves_Power - 1.0);
         }
     }
+
+    //pertrubation
+    float h = 0.0;  
+    if(wavePerturbation > 0){
+        float freq_scale = 2.0;
+        float amp_scale = 0.2;
+        float amp = 5.0;
+        float freq = 1.0;
+        float choppy = 30.0;
+        float d = 0.0;
+  
+        for(int i = 0; i < 20; i++){
+            d = sea_octave((position4.xz + time)*freq, choppy);
+            d += sea_octave((position4.xz - time)*freq, choppy);
+            h += d * amp;  
+            
+            choppy = mix(choppy,1.0,0.2);
+            amp *= amp_scale;
+            freq *= freq_scale;
+        }
+    }
+
+    position4.y += h;
+        
 
 
     
