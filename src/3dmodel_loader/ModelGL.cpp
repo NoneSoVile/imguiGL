@@ -258,12 +258,14 @@ void ModelGL::drawElements(GLint positionHandle, GLint normalHandle, GLint texco
     //checkGlError("glVertexAttribPointer");
     
     if (useLines) {
-        glDrawElements(GL_LINES, mIndexCount, GL_UNSIGNED_INT, 0);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glDrawElements(GL_TRIANGLES, mIndexCount, GL_UNSIGNED_INT, 0);
     }
     else if (usePoints) {
         glDrawElements(GL_POINTS, mIndexCount, GL_UNSIGNED_INT, 0);
     }
     else {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         glDrawElements(GL_TRIANGLES, mIndexCount, GL_UNSIGNED_INT, 0);
     }
 
