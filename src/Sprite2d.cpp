@@ -4,6 +4,7 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #endif
 #include "imgui.h"
+#include "imgui_internal.h"
 #include <string>
 
 class Shader;
@@ -111,20 +112,36 @@ void Sprite2d::updateUI(int w, int h) {
         ImGui::Begin("Helloxxx, world!", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);                          // Create a window called "Hello, world!" and append into it.
         ImGui::Text("Settings");               // Display some text (you can use a format strings too)
 
+		if (ImGui::RadioButton("Euler", solve_type == Euler)) { solve_type = Euler; } ImGui::SameLine();
+		if (ImGui::RadioButton("improved Euler", solve_type == IMPROVED_EULER)) { solve_type = IMPROVED_EULER; } ImGui::SameLine();
+		if (ImGui::RadioButton("RK2", solve_type == RK2)) { solve_type = RK2; }ImGui::SameLine();
+		if (ImGui::RadioButton("RK4", solve_type == RK4)) { solve_type = RK4; }
+
 		ImGui::SliderFloat2("sprite size", pixelSize, 2, 960);
 		ImGui::SliderFloat2("sprite position", pixelPosition, 0, screenDim.x);
         ImGui::SliderFloat("Trush x direction", &T[0], -200.0f, 200.0f); 
 		ImGui::SliderFloat("Trush y direction", &T[1], -200.0f, 200.0f);
 		ImGui::SliderFloat("Velocity x direction", &V.x, -200.0f, 200.0f);
 		ImGui::SliderFloat("Velocity y direction", &V.y, -200.0f, 200.0f);
-		ImGui::SliderFloat("friction coefficient", &C, 0.5f, 60.0f);
+		ImGui::SliderFloat("friction coefficient", &C, 0.01f, 60.0f);
 		ImGui::SliderFloat("Step Time", &deltaT, 0.5f, 10.0f);
         
-		ImGui::NewLine();ImGui::NewLine();ImGui::NewLine();
+		ImGui::NewLine();ImGui::NewLine();
+		if (ImGui::Button("zero X Simulation"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+		{
+			V.x = 0; T[0] = 0;
+		}
+
+		if (ImGui::Button("zero y Simulation"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+		{
+			V.y = 0; T[1] = 0;
+		}
 		if (ImGui::Button("Reset Simulation"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
 		{
 			initSimulation(screenDim.x, screenDim.y);
 		}
+
+		
        
 
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
@@ -174,7 +191,7 @@ vec2f Sprite2d::screenToNdc(vec2f screenPosition){
 
 void Sprite2d::initSimulation(int w, int h){
 	screenDim = vec2f(w, h);
-	pixelSize = vec2f(20, 20);
+	pixelSize = vec2f(40, 40);
 	pixelPosition = screenDim / 2;
 
 	T = vec2f(2, 2);  //N
@@ -185,14 +202,14 @@ void Sprite2d::initSimulation(int w, int h){
 
 	for (size_t i = 0; i < MAX_PARTICLES; i++)
 	{
-		particles_offset[i] = i*20;
+		particles_offset[i] = i*80;
 	}
 }
 
  void Sprite2d::step0(float dt){
 	vec2f Vnew, Snew;
 	// Calculate the total force
-	F = (T - (C * V));
+	F = (T - (C * V ));//** V* vec2f(ImSign(V.x), ImSign(V.y)))
 	// Calculate the acceleration
 	A = F / M;
 	// Calculate the new velocity at time t + dt
@@ -250,9 +267,6 @@ void Sprite2d::initSimulation(int w, int h){
 	 vec2f k1, k2;
 	 static float time = 0;
 	 time += dt;
-	 vec2f T;
-	 T.x = cos(time * 0.01) * this->T.x;
-	 T.y = sin(time * 0.01) * this->T.y;
 	 F = (T - (C * V));
 	 A = F / M;
 	 k1 = dt * A;
@@ -306,7 +320,24 @@ void Sprite2d::stepSimulation(float w, float h,float dt){
 	screenDim = vec2f(w, h);
 	//assume dt = 10ms means uniform time interval
 	dt = deltaT;  //ms
-	step0(dt);
+	switch (solve_type)
+	{
+	case Sprite2d::Euler:
+		step0(dt);
+		break;
+	case Sprite2d::IMPROVED_EULER:
+		step1(dt);
+		break;
+	case Sprite2d::RK2:
+		step2(dt);
+		break;
+	case Sprite2d::RK4:
+		step3(dt);
+		break;
+	default:
+		break;
+	}
+	
 	pixelPosition = S;
 
 	//ndc viewport range [-1,1] .ie 2 in screen for every dimensions
@@ -327,7 +358,7 @@ void Sprite2d::run(float w, float h) {
 		float temp = offset.y;
 		//offset.y = sin(temp)*MB::length(T)*0.2;
 		temp = offset.x;
-		offset.x = cos(temp*10)*0.5;
+		offset.x = 0;// cos(temp * 10) * 0.5;
 		drawSprite(w, h, offset);
 	}
 	

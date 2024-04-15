@@ -8,9 +8,15 @@ using MB::vec2f;
 using MB::matrix4f;
 
 class Shader;
-#define MAX_PARTICLES 400
+#define MAX_PARTICLES 4
 class Sprite2d: public ShaderTester
 {
+    enum SOLVER_TYPE {
+        Euler,
+        IMPROVED_EULER,
+        RK2,
+        RK4
+    };
 public:
 //set all of the properties before call the init() function
 //locate the sprite2d in screen view port coordinate
@@ -46,6 +52,7 @@ protected:
     float deltaT = 1;
 
     vec2f particles_offset[MAX_PARTICLES];
+    SOLVER_TYPE solve_type = Euler;
 
 
 protected:
