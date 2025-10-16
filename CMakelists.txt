@@ -1,5 +1,6 @@
-cmake_minimum_required( VERSION 3.0 )
+cmake_minimum_required( VERSION 3.5 )
 set( CMAKE_TOOLCHAIN_FILE "d:/vcpkg/vcpkg/scripts/buildsystems/vcpkg.cmake" )
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project(imgui_GL)
 # set path of glfw3
