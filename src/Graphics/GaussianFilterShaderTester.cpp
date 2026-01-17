@@ -10,7 +10,7 @@ using MB::matrix4f;
 using MB::vec3f;
 using MB::vec2f;
 
-void GaussianFilterShaderTester::init() {
+void GaussianFilterShaderTester::init(int w, int h) {
     /*create shaders
     */
     string vertexShaderFile = resourceFolder + std::string("shaders/basic.vert");

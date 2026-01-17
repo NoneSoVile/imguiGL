@@ -71,5 +71,7 @@ protected:
 
 public:
     virtual void run(float w, float h);
+    virtual void onScroll(float dxScreen, float dyScreen) override;
+    virtual void onZoom(float zoomDelta) override;
 
 };

@@ -16,7 +16,7 @@ using MB::matrix4f;
 using MB::vec3f;
 using MB::vec2f;
 
-void GeometryShaderTester::init() {
+void GeometryShaderTester::init(int w, int h) {
     /*create shaders
     */
     string vertexShaderFile = resourceFolder + std::string("shaders/line.vert");

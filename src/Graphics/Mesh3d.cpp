@@ -538,3 +538,15 @@ void Mesh3d::run(float w, float h)
     glDisable(GL_BLEND);
     glColorMask(true, true, true, true);
 }
+
+void Mesh3d::onScroll(float dxScreen, float dyScreen) {
+    const float sensitivity = 0.005f; // 鼠标灵敏度，可根据需要调整
+    model_rot.y += dxScreen * sensitivity; // 水平移动控制Y轴旋转
+    model_rot.x += dyScreen * sensitivity; // 垂直移动控制X轴旋转
+}
+
+void Mesh3d::onZoom(float zoomDelta) {
+    const float sensitivity = 0.5f; // 缩放灵敏度
+    eye.z += zoomDelta * sensitivity;
+    if (eye.z < 0.1f) eye.z = 0.1f; // 防止相机太近原点
+}

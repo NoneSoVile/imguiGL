@@ -27,7 +27,7 @@ static void generateInputData(float* inputDATA, uint len){
         inputDATA[i] = i*1.0f;
     }
 }
-void ShaderTester::init() {
+void ShaderTester::init(int w, int h) {
     /*create shaders
     */
     string shaderFile = resourceFolder + std::string("shaders/calYSumArrayRGBATexture.comp");

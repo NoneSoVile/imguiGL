@@ -122,7 +122,7 @@ void RigidBody2D::CalcLoads(void)
     vMoment += Mb;
 }
 
-void PhysicsCurve::init() {
+void PhysicsCurve::init(int w, int h) {
     /*create shaders
     */
     string vertexShaderFile = resourceFolder + std::string("shaders/line.vert");

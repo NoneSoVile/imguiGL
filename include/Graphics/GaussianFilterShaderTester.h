@@ -41,7 +41,7 @@ protected:
 
     void doCompute();
 public:
-    void init();
+    void init(int w, int h);
     void run(float w, float h);
 };
 

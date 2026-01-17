@@ -54,6 +54,7 @@ using cv::COLOR_RGB2BGRA;
 static void glfw_key(GLFWwindow* window, int32_t k, int32_t s, int32_t action, int32_t mods);
 static void glfw_mouse(GLFWwindow* window, int32_t button, int32_t action, int32_t mods);
 static void glfw_motion(GLFWwindow* window, double x, double y);
+static void glfw_scroll(GLFWwindow* window, double xoffset, double yoffset);
 void prepareKeyCodeRemap();
 void initScene();
 float screenW = WINDOW_WIDTH;
@@ -111,6 +112,7 @@ int main(int, char**)
 
 	glfwSetMouseButtonCallback(window, glfw_mouse);
 	glfwSetCursorPosCallback(window, glfw_motion);
+	glfwSetScrollCallback(window, glfw_scroll);
 
 	// Setup Dear ImGui context
 	IMGUI_CHECKVERSION();
@@ -140,17 +142,14 @@ int main(int, char**)
 
 
 	
-	ShaderTester shaderTester;
-	GeometryShaderTester geoShaderTester;
-	GaussianFilterShaderTester gaussianFilterTester;
-	PhysicsCurve curve;
-	Sprite2d sprite;
-	//Mesh3d sprite;
+	//ShaderTester shaderTester;
+	//GeometryShaderTester sprite;
+	//GaussianFilterShaderTester sprite;
+	//PhysicsCurve sprite;
+	//Sprite2d sprite;
+	Mesh3d sprite;
 	//WaterShader sprite;
-	//shaderTester.init();
-	//geoShaderTester.init();
-	//gaussianFilterTester.init();
-	curve.init();
+
 	sprite.init(screenW, screenH);
 
 	shaderTesterObj = &sprite;
@@ -473,4 +472,12 @@ static void glfw_mouse(GLFWwindow* window, int32_t button, int32_t action, int32
 
 	//s_lastButton = p.m_id;
 	//if(sc)
+}
+
+static void glfw_scroll(GLFWwindow* window, double xoffset, double yoffset)
+{
+	if (shaderTesterObj)
+	{
+		shaderTesterObj->onZoom((float)yoffset);
+	}
 }

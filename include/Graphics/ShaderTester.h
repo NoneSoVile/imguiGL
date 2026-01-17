@@ -10,6 +10,7 @@ class MouseEvent{
 public:
 	virtual void onScroll(float dxScreen, float dyScreen){}
 	virtual void onFling(float vx, float vy){}
+	virtual void onZoom(float zoomDelta){}
 };
 
 class ShaderTester: public RenderState, public MouseEvent
@@ -41,6 +42,6 @@ protected:
     float outputData[MAX_RESULT_LEN];
     float expectedSum[MAX_RESULT_LEN];
 public:
-    void init();
+    virtual void init(int w, int h);
     void run(float w, float h);
 };
