@@ -10,8 +10,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
-#include "Vector.h"
-#include "Matrix.h"
+#include "NvMath.h"
 using MB::vec3f;
 using MB::vec2f;
 using MB::vec4f;
