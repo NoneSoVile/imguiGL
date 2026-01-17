@@ -1,7 +1,7 @@
 
 #ifndef NV_QUATERNION_H
 #define NV_QUATERNION_H
-
+#include "Matrix.h"
 
 /// \file
 /// Basic quaternion class with math operations

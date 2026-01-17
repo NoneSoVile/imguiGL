@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include "Vector.h"
+#include "NvMath.h"
 using std::vector;
 using MB::vec3f;
 

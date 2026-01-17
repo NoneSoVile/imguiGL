@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include "Vector.h"
+#include "NvMath.h"
 using MB::vec2f;
 using MB::vec3f;
 

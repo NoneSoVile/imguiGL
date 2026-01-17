@@ -1,6 +1,6 @@
 #include <iostream>
 #include <vector>
-#include "Vector.h"
+#include "NvMath.h"
 using MB::vec3f;
 class BSpline {
 public:

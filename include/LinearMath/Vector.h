@@ -2,7 +2,7 @@
 #ifndef NV_VECTOR_H
 #define NV_VECTOR_H
 
-#include "NvMath.h"
+//#include "NvMath.h"
 
 /// \file
 /// Basic float vector support

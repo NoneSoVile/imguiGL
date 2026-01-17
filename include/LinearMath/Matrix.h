@@ -3,6 +3,7 @@
 
 
 #include <math.h>
+#include <cstdint>
 
 /// \file
 /// Basic matrix classes with math operations
